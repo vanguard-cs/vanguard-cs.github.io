@@ -48,7 +48,7 @@ h3 {
   }
   
   /* Change the color of links on hover */
-  .topnav-1 a {
+  .topnav-1 a:hover {
     background-color: #272727;
     color: #98F5FC;
   }
@@ -81,20 +81,50 @@ h3 {
     color: white;
   }
   .topnav-2 img {
-    size: 66%;
+    width: 6%;
+    height: 6%;
+    float: left;
   }
 
   .frontpage {
     float: center;
     color:#05d9e8;
-    padding: 15%;
-    height: 30%;
+    margin-left: 15%;
+    margin-right: 15%;
+    padding: 5%;
+    height: 20%;
   }
+  .icon-container {
+    display: flex;
+    justify-content: space-evenly; /* Distributes icons evenly */
+    align-items: center; /* Aligns icons vertically */
+    padding: 10px;
+}
 
-.frontpage img {
-  width: 5%;
-  height: 5%;
-  align-self: auto;
-  align-items: normal;
-  padding: 5%;
+.icon-container a img,
+.phone-icon img {
+    width: 40px;
+    height: auto;
+}
+
+.phone-icon {
+  position: relative;
+  cursor: pointer;
+}
+
+.phone-number {
+  display: none;
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #98F5FC;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.phone-icon:hover .phone-number {
+  display: block;
 }
