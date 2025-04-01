@@ -31,7 +31,7 @@ h3 {
 
 /* Add a black background color to the top navigation */
 .topnav {
-    background-color: #111;
+    background-color: #272727;
     overflow: hidden;
     /*padding: 40px;*/
   }
@@ -41,7 +41,7 @@ h3 {
     float: right;
     color: #05d9e8;
     text-align: center;
-    padding: 14px 16px;
+    padding: 2% 4%;
     text-decoration: none;
     font-size: large;
     font-family:'Courier New', Courier, monospace;
@@ -49,7 +49,7 @@ h3 {
   
   /* Change the color of links on hover */
   .topnav-1 a {
-    background-color: #111;
+    background-color: #272727;
     color: #98F5FC;
   }
   
@@ -63,7 +63,7 @@ h3 {
     float: left;
     color: #05d9e8;
     text-align: center;
-    padding: 14px 16px;
+    padding: 2% 4%;
     text-decoration: none;
     font-size: large;
     font-family:'Courier New', Courier, monospace;
@@ -71,7 +71,7 @@ h3 {
   
   /* Change the color of links on hover */
   .topnav-2 a {
-    background-color: #111;
+    background-color: #272727;
     color: #98F5FC;
   }
   
@@ -80,15 +80,21 @@ h3 {
     background-color: #04AA6D;
     color: white;
   }
+  .topnav-2 img {
+    size: 66%;
+  }
 
   .frontpage {
     float: center;
     color:#05d9e8;
     padding: 15%;
-    height: 100px;
+    height: 30%;
   }
 
 .frontpage img {
-  width: 50px;
-  height: 50px;
+  width: 5%;
+  height: 5%;
+  align-self: auto;
+  align-items: normal;
+  padding: 5%;
 }
