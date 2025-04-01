@@ -85,9 +85,10 @@ h3 {
     float: center;
     color:#05d9e8;
     padding: 15%;
+    height: 100px;
   }
 
 .frontpage img {
-  width: 20%;
-  height: 20%;
+  width: 25px;
+  height: 25px;
 }
