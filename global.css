@@ -111,6 +111,10 @@ h3 {
   position: relative;
   cursor: pointer;
 }
+.icon-container a img:hover {
+  filter: blur(0.9px);
+  filter:brightness(1.75);
+}
 
 .phone-number {
   display: none;
@@ -124,7 +128,10 @@ h3 {
   font-size: 14px;
   white-space: nowrap;
 }
-
+.phone-number:hover {
+  filter: blur(0.9px);
+  filter:brightness(1.75);
+}
 .phone-icon:hover .phone-number {
   display: block;
 }
