@@ -5,108 +5,88 @@
     src: url(https://fonts.gstatic.com/s/orbitron/v31/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nyGy6BoWgz.woff2) format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
+  /*main theme of the site*/
 body {
     background-color: #080808;
     background-image: url('main/assets/background.svg');
     background-size: cover;
 }
-
 h1 {
     font-family: 'Orbitron';
     font-style: oblique;
-    text-shadow: 3px 0 0 #ff71ce, 0 -3px 0 #7dff00;
+    text-shadow: 2px 0 0 #ff71ce, 0 1px 0 #7dff00;
     color:#05d9e8;
     font-size:xx-large;
 }
-
 h2 {
+    text-shadow: 2px 0 0 #ff71ce, 0 1px 0 #7dff00;
     font-family: 'Orbitron';
-    font-size:medium;
+    font-style: oblique;
+    font-size:x-large;
     color:#05d9e8;
 }
-h3 {
-    font-family: 'Courier New', Courier, monospace;
-    font-size:small;
+/*themed navigation bar*/
+.topnav-container {
+  background-color: #272727;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 5%;
 }
-
-/* Add a black background color to the top navigation */
-.topnav {
-    background-color: #272727;
-    overflow: hidden;
-    /*padding: 40px;*/
-  }
-  
-  /* Style the links inside the navigation bar */
-  .topnav-1 a {
-    float: right;
-    color: #05d9e8;
-    text-align: center;
-    padding: 2% 4%;
-    text-decoration: none;
-    font-size: large;
-    font-family:'Courier New', Courier, monospace;
-  }
-  
-  /* Change the color of links on hover */
-  .topnav-1 a:hover {
-    background-color: #272727;
-    color: #98F5FC;
-  }
-  
-  /* Add a color to the active/current link */
-  .topnav-1 a.active {
-    background-color: #04AA6D;
-    color: white;
-  }
- /* Style the links inside the navigation bar */
- .topnav-2 a {
-    float: left;
-    color: #05d9e8;
-    text-align: center;
-    padding: 2% 4%;
-    text-decoration: none;
-    font-size: large;
-    font-family:'Courier New', Courier, monospace;
-  }
-  
-  /* Change the color of links on hover */
-  .topnav-2 a {
-    background-color: #272727;
-    color: #98F5FC;
-  }
-  
-  /* Add a color to the active/current link */
-  .topnav-2 a.active {
-    background-color: #04AA6D;
-    color: white;
-  }
-  .topnav-2 img {
-    width: 6%;
-    height: 6%;
-    float: left;
-  }
-
-  .frontpage {
-    float: center;
-    color:#05d9e8;
-    margin-left: 15%;
-    margin-right: 15%;
-    padding: 5%;
-    height: 20%;
-  }
-  .icon-container {
-    display: flex;
-    justify-content: space-evenly; /* Distributes icons evenly */
-    align-items: center; /* Aligns icons vertically */
-    padding: 10px;
+.topnav-2 {
+  display: flex;
+  align-items: center;
+  gap: 5%;
 }
-
+.topnav-2 a {
+  text-decoration: none;
+}
+.topnav-2 a img {
+  max-width: 40px;
+  height: auto;
+  transition: transform 0.3s ease-in-out;
+}
+.topnav-2 a:hover img {
+  transform: scale(1.1);
+}
+.topnav-1 {
+  display: flex;
+  gap: 75px;
+}
+.topnav-1 a {
+  color: #05d9e8;
+  text-align: center;
+  text-decoration: none;
+  font-size: large;
+  font-family: 'Courier New', Courier, monospace;
+  transition: color 0.3s ease-in-out;
+}
+.topnav-1 a:hover {
+  color: #98F5FC;
+}
+/*landing page title*/
+.frontpage {
+  float: center;
+  color:#05d9e8;
+  margin-left: 15%;
+  margin-right: 15%;
+  padding: 5%;
+  height: 20%;
+}
+/*contact icon list*/
+.icon-container {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 10px;
+}
 .icon-container a img,
 .phone-icon img {
     width: 40px;
     height: auto;
+    transition: transform 0.3s ease-in-out;
 }
-
 .phone-icon {
   position: relative;
   cursor: pointer;
@@ -114,8 +94,8 @@ h3 {
 .icon-container a img:hover {
   filter: blur(0.9px);
   filter:brightness(1.75);
+  transform: scale(1.1);
 }
-
 .phone-number {
   display: none;
   position: absolute;
@@ -128,10 +108,65 @@ h3 {
   font-size: 14px;
   white-space: nowrap;
 }
-.phone-number:hover {
+.phone-icon img:hover {
   filter: blur(0.9px);
   filter:brightness(1.75);
+  transform: scale(1.1);
 }
 .phone-icon:hover .phone-number {
   display: block;
+}
+/*main content blocks*/
+.content-container {
+  display:flex;
+  flex-direction: column;
+  align-items: left;
+  padding: 4%;
+  margin-left: 15%;
+}
+.content-container p {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: medium;
+  color: #05d9e8;
+}
+/*code box styles and behavior*/
+.code-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.code-box {
+  background-color: #272727;
+  /*border-left: 5px solid #080808;*/
+  font-family: "Courier New", monospace;
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  /*border-radius: 5px;*/
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  /*margin-top: 10px;*/
+  color:#98F5FC;
+  text-align: left;
+  overflow-x: auto;
+}
+.code-box code {
+  display: block; /* Ensures <code> takes full width */
+  margin: 0; /* Removes extra margin */
+  padding: 0; /* Removes any default padding */
+}
+.copy-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #05d9e8;
+  color: white;
+  border: none;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+.copy-btn:hover {
+  background: #98F5FC;
 }
