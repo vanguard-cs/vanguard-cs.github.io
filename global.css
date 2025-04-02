@@ -25,6 +25,11 @@ h2 {
     font-size:x-large;
     color:#05d9e8;
 }
+h3 {
+  font-family: 'Orbitron';
+  font-size: large;
+  color:#05d9e8;
+}
 /*themed navigation bar*/
 .topnav-container {
   background-color: #272727;
@@ -130,6 +135,10 @@ h2 {
   font-size: medium;
   color: #05d9e8;
 }
+.content-container a {
+  color:#98F5FC;
+  font-style: underline;
+}
 /*code box styles and behavior*/
 .code-container {
   position: relative;
@@ -151,6 +160,7 @@ h2 {
   color:#98F5FC;
   overflow-x: auto;
   width: 95%;
+  max-height: 25vh;
 }
 .code-box code {
   display: block; /* Ensures <code> takes full width */
