@@ -99,7 +99,7 @@ print(sys_func('id'));
             <p>Simple and effective and allows just enough upgrade to keep moving. I got my bearings, oriented myself and was suprised to find I was in /home already as app-user. My experience so far from incursion via web servers is being dropped into var-www as a low level user. This time I got lucky, and a quick scan of surrounding directories discovered a database.db. Python web servers are sublime ways of exfiltrating data or dropping in tools and if you are unfamiliar with them please <a href="https://realpython.com/python-http-server/">check them out</a>! Two hashes, and a few rounds of 'guess the hash code' with hashcat and I had a set of credentials for ssh.<br><br>
             
             <h3>PRIVESC</h3>
-            Once an ssh session is opened:</p>
+            <p>Once an ssh session is opened:</p>
             <div class="code-container">
                 <button class="copy-btn" onclick="copyCode()">📋</button>
                 <pre class="code-box" id="code-snippet"><code class="language-bash">sudo -l</code></pre>
