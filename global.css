@@ -31,6 +31,11 @@ h3 {
   font-size: large;
   color:#05d9e8;
 }
+p {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: medium;
+  color: #05d9e8;
+}
 /*themed navigation bar*/
 .topnav-container {
   background-color: #272727;
