@@ -85,6 +85,11 @@ p {
   padding: 5%;
   height: 20%;
 }
+.frontpage p {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: medium;
+  color: #05d9e8;
+}
 /*contact icon list*/
 .icon-container {
   display: flex;
