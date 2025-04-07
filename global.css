@@ -17,6 +17,7 @@ h1 {
     text-shadow: 2px 0 0 #ff71ce, 0 1px 0 #7dff00;
     color:#05d9e8;
     font-size:xx-large;
+    text-transform: uppercase;
 }
 h2 {
     text-shadow: 2px 0 0 #ff71ce, 0 1px 0 #7dff00;
