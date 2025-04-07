@@ -12,9 +12,9 @@
                 <a href="index.html"><img src="main\assets\logo.png"></a>
             </div>
             <div class="topnav-1">
-                <a href="resume.html">resume</a>
                 <a href="articles.html">articles</a>
                 <a href="bio.html">bio</a>
+                <a href="resume.html">resume</a>
             </div>    
         </div>
         <!--<div class="content-container">
@@ -54,10 +54,22 @@
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel</code></pre>
             </div>
 
-            <p>My go to for challenge port-mapping. For bounty hunting I tend to use low profile scans that restricts timing to avoid making noise or potentially triggering rate limits, and I extend the port range to encompass all 65535 ports. I also practice IDS evasion using packet sizing and fragmentation, and IP spoofing. Overkill? Probably, but It's thorough and sets up good practice: minimise disruption, gather as much information as possible, while giving the IDS a run for its money. Clever systems will grab logging entries for scans with version detection so I leave this off: we can find that information later on.<br><br>
+        <p>My go to for challenge port-mapping. For bounty hunting I tend to use low profile scans that restricts timing to avoid making noise or potentially triggering rate limits, and I extend the port range to encompass all 65535 ports. I also practice IDS evasion using packet sizing and fragmentation, and IP spoofing. Overkill? Probably, but It's thorough and sets up good practice: minimise disruption, gather as much information as possible, while giving the IDS a run for its money. Clever systems will grab logging entries for scans with version detection so I leave this off: we can find that information later on.<br><br>
 
-            In the basic example given, the ports are indicative of a basic web server setup. Linux kernel, open http port with a version of Apache, and SSH. In challenge environments the pathway is generally sequential - approach and initial access would be via the web server, foothold via ssh using leveraged authenticated user credentials, and privilege escalation from discovered misconfigurations inside the target environment. In the wild however, at this stage I would begin to enumerate as much information as I can about running services and get a feel for the target environment from the outisde.<br><br>
-            
-            To that end I complete the recon stage by finding service versions using tools like Burp or Chrome Developer tools (or whatever specialty scripts are appropriate for non-web targets), and researching past CVE's, reading previous exploit attempts to identify reoccuring problems that might be worth exploring, and preparing a sandbox environment locally with target services installed to allow for resource development and a 'safe' testing ground.</p>
+        In the basic example given, the ports are indicative of a basic web server setup. Linux kernel, open http port with a version of Apache, and SSH. In challenge environments the pathway is generally sequential - approach and initial access would be via the web server, foothold via ssh using leveraged authenticated user credentials, and privilege escalation from discovered misconfigurations inside the target environment. In the wild however, at this stage I would begin to enumerate as much information as I can about running services and get a feel for the target environment from the outisde.<br><br>
+
+        Where appropriate I use Feroxbuster for directory mapping and unearthing accidental secrets - the only real trick for this is making sure to throttle the fuzz requests to avoid accidentally overloading the server. I may be an attacker but I'm not a savage. Finally I use FFUF to check for subdomains, and then it's time to move on.<br><br>
+        
+        To that end I complete the recon stage by finding service versions using tools like Burp or Chrome Developer tools (or whatever specialty scripts are appropriate for non-web targets), and researching past CVE's, reading previous exploit attempts to identify reoccuring problems that might be worth exploring, and preparing a sandbox environment locally with target services installed to allow for resource development and a 'safe' testing ground.</p>
 
         <h3>APPROACH</h3>
+
+        <p>This is obviously where a standardised approach ends, as each environment or target will vary depending on what the recon phase digs up. Since we used the example of a web service that is what I will base the rest of the approach on. After 3 years of my Masters and a year of CEH certification, there are still ways of abusing web service configurations that are new and exciting! Sql injection was the first real 'hack' I learnt so it has a special place for me, and while the instances of unsanitised input are becoming almost unheard of I always find myself looking for that first. Burp is an amazing program and I lean on it heavily for web testing, checking endpoints for injection points (and being generally dissapointed - HTB always throws the odd injection vector into their challenges so I can get my fix there), and then moving outward to test for all the usual suspects: cross site scripting, request forgery, relative or absolute path traversal, file inclusion, the list is long and generally full of dead ends but its worth the time just in case a slip in security configuration gets caught early.<br><br>
+
+        It is worth noting here that this would also be the phase for examining my sandbox environment and looking through source code. I am not a developer and absolutely not at the point in my pentesting where I can claim any 0-day vulnerability exposure, but getting into the habbit of examining code for any logic that looks abusable is a great practice and one that has helped me immesurable. As a general rule I am looking for anything that accessses, writes to, or interfaces with the core system.</p>
+
+        <h3>TO BE CONTINUED...</h3>
+        </div>
+    </body>
+</html>
+
