@@ -1,8 +1,9 @@
 <<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"> <!-- Character encoding -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive scaling -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="global.css">
   <title>07/04/25</title>
 </head>
     <body>
@@ -16,3 +17,45 @@
                 <a href="bio.html">bio</a>
             </div>    
         </div>
+        <!--<div class="content-container">
+            <h2>this is content title</h2>
+            <p>This is the write up template content para</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode()">📋</button>
+                <pre class="code-box" id="code-snippet"><code class="language-html">&lt;h1&gt;Hello, World!&lt;/h1&gt;</code></pre>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+            <script src="main\js\copy-code.js"></script>
+            <div class="code-container">
+                <pre class="code-box" id="code-snippet"><code class="language-bash">output template</code></pre>
+            </div>
+        </div>-->
+        <div class="content-container">
+        <h2>Attack Methodology</h2>
+        <p>A good first entry for what will be an going progress report and evolving demonstration of my journey through offensive security, I am going to cover the basics of how I attack a target system. There are many articles out there on this topic written by people far more experienced and wise than I am, so instead of expert testimony this and future articles will be more akin to opinion pieces that showcase my understanding and practical implementation of security principals.<br><br>
+        
+        I hope that for others starting their own journey, or maybe even some veterans looking for a fresh perspective, will find their way here and sit by the digital fireside for a moment.<br><br></p>
+
+        <h3>RECON</h3>
+
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode()">📋</button>
+                <pre class="code-box" id="code-snippet"><code class="language-bash">nmap -Pn -sS -O -f -D RND:10 --mtu 96 target-ip
+                </code></pre>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+            <script src="main\js\copy-code.js"></script>
+            <div class="code-container">
+                <pre class="code-box" id="code-snippet"><code class="language-bash">PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.12 (Ubuntu Linux; protocol 2.0)
+8000/tcp open  http    Apache httpd 2.4.52
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel</code></pre>
+            </div>
+
+            <p>My go to for challenge port-mapping. For bounty hunting I tend to use low profile scans that restricts timing to avoid making noise or potentially triggering rate limits, and I extend the port range to encompass all 65535 ports. I also practice IDS evasion using packet sizing and fragmentation, and IP spoofing. Overkill? Probably, but It's thorough and sets up good practice: minimise disruption, gather as much information as possible, while giving the IDS a run for its money. Clever systems will grab logging entries for scans with version detection so I leave this off: we can find that information later on.<br><br>
+
+            In the basic example given, the ports are indicative of a basic web server setup. Linux kernel, open http port with a version of Apache, and SSH. In challenge environments the pathway is generally sequential - approach and initial access would be via the web server, foothold via ssh using leveraged authenticated user credentials, and privilege escalation from discovered misconfigurations inside the target environment. In the wild however, at this stage I would begin to enumerate as much information as I can about running services and get a feel for the target environment from the outisde.<br><br>
+            
+            To that end I complete the recon stage by finding service versions using tools like Burp or Chrome Developer tools (or whatever specialty scripts are appropriate for non-web targets), and researching past CVE's, reading previous 
