@@ -108,12 +108,12 @@ print(sys_func('id'));
             <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
             <script src="main\js\copy-code.js"></script>
             <div class="code-container">
-                <pre class="code-box" id="code-snippet"><code class="language-bash">User martin may run the following commands on localhost:
-    (ALL : ALL) NOPASSWD: /usr/bin/backy.sh</code></pre>
+                <pre class="code-box" id="code-snippet"><code class="language-bash">User USER may run the following commands on localhost:
+    (ALL : ALL) NOPASSWD: /usr/bin/backup.sh</code></pre>
             </div>
             <p>The amazing thing about the journey of ethical hacking is when you start, especially from a non-IT background, it seems almost overwhelming. Nothing seems to make any sense, let alone lead to somehow taking over a machine. Then suddenly you get it, and you look at this output as if someone had just handed you the keys to a locked door.<br><br>
             
-            My hijacked user can execute backy.sh, a shell script, with super-user privilege. Time to look at the script:</p>
+            My hijacked user can execute a shell script, with super-user privilege. Time to look at the script:</p>
             <div class="code-container">
                 <button class="copy-btn" onclick="copyCode()">📋</button>
                 <pre class="code-box" id="code-snippet"><code class="language-bash">cat /usr/bin/backy.sh</code></pre>
@@ -165,7 +165,7 @@ done</code></pre>
             <div class="code-container">
                 <button class="copy-btn" onclick="copyCode()">📋</button>
                 <pre class="code-box" id="code-snippet"><code class="language-json">{
-"destination": "/home/martin/backups/",
+"destination": "/home/USER/backups/",
 "multiprocessing": true,
 "verbose_log": true,
 "directories_to_archive": [
