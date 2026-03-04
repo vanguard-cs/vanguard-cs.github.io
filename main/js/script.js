@@ -11,7 +11,7 @@ const imgWidth = 5400;
 const imgHeight = 3750;
 const bounds = [[0, 0], [imgHeight, imgWidth]];
 
-const imageOverlay = L.imageOverlay('map_background_extracted.jpeg', bounds).addTo(map);
+const imageOverlay = L.imageOverlay('main/assets/map_background_extracted.jpeg', bounds).addTo(map);
 
 map.fitBounds(bounds);
 map.setView([imgHeight / 2, imgWidth / 2], -1);
@@ -193,7 +193,7 @@ map.on('click', function (e) {
 
 // SVG Vectors
 let pathsRef = [];
-fetch('map_overlay.svg')
+fetch('main/assets/map_overlay.svg')
     .then(r => r.text())
     .then(svgText => {
         const parser = new DOMParser();
