@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>40k Crusade: 500 Worlds Interactive Map</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="500wstyle.css">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="ui-container">
+        <header>
+            <h1>40K <span>CRUSADE</span></h1>
+            <h2>500 Worlds Campaign Map</h2>
+        </header>
+
+        <main class="main-content">
+            <!-- Leaflet Map Container -->
+            <div id="map-container">
+                <div id="map"></div>
+                <div id="coords-overlay">X: 000 | Y: 000</div>
+            </div>
+
+            <!-- Interactivity Sidebar -->
+            <aside id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Map Database</h3>
+                    <p>Tactical overlays and persistent markers.</p>
+                </div>
+
+                <div class="controls">
+                    <button id="btn-add-marker" class="action-btn">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path
+                                d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
+                        </svg>
+                        Add New Point of Interest
+                    </button>
+                    <button id="btn-export" class="action-btn secondary">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path
+                                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                            <path
+                                d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+                        </svg>
+                        Export Data JSON
+                    </button>
+                    <p class="instruction">Click anywhere on the map to get precise coordinates matching your Affinity
+                        layout!</p>
+                </div>
+
+                <div id="poi-list" class="poi-list">
+                    <!-- POIs inserted dynamically -->
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>COGITATOR ACCESS LINK</h3>
+            </div>
+            <div id="auth-form" style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">Enter a Crusade ID to join an
+                    existing session, or leave blank to initialize a new campaign data-link.</p>
+                <div class="form-group">
+                    <label>Crusade ID (Access Code)</label>
+                    <input type="text" id="crusade-id-input" placeholder="e.g. CRUSADE-X7Q9P" autocomplete="off"
+                        style="text-transform: uppercase;">
+                </div>
+                <div id="auth-message"
+                    style="color: var(--accent-cyan); font-size: 0.85rem; font-family: monospace; display: none;">
+                    Establishing connection...</div>
+                <button id="btn-auth-submit" class="action-btn submit-btn">INITIALIZE CONNECTION</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="poi-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>REGISTER NEW ANOMALY</h3>
+                <button id="close-modal">&times;</button>
+            </div>
+            <form id="poi-form">
+                <div class="form-group">
+                    <label>Designation (Title)</label>
+                    <input type="text" id="poi-title" required placeholder="e.g. Hive Fleet Tendril" autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Coord Y (Height)</label>
+                        <input type="number" step="0.1" id="poi-y" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Coord X (Width)</label>
+                        <input type="number" step="0.1" id="poi-x" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Intelligence Log (Description)</label>
+                    <textarea id="poi-desc" rows="4"
+                        placeholder="Enter tactical briefing or narrative event details..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Strategic Type</label>
+                    <select id="poi-type">
+                        <option value="planet">Planet/System</option>
+                        <option value="threat">Threat Warning</option>
+                        <option value="objective">Key Objective</option>
+                        <option value="fleet">Fleet Maneuver</option>
+                    </select>
+                </div>
+                <button type="submit" class="action-btn submit-btn">LOG TO COGITATOR</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Custom Scripts -->
+    <script src="main/js/data.js?v=2"></script>
+    <script src="main/js/script.js?v=4"></script>
+</body>
+
+</html>
