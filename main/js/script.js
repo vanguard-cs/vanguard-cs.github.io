@@ -207,81 +207,140 @@ map.on('click', function (e) {
 
 // SVG Vectors
 let pathsRef = [];
-fetch('main/assets/map_overlay.svg')
-    .then(r => r.text())
-    .then(svgText => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(svgText, "image/svg+xml");
-        const svgElement = doc.documentElement;
 
-        svgElement.setAttribute('viewBox', '0 0 4050 2812.5');
-        svgElement.setAttribute('preserveAspectRatio', 'none');
+Promise.all([
+    fetch('main/assets/map_overlay_struc.svg').then(r => r.text()),
+    fetch('main/assets/map_overlay_inf.svg').then(r => r.text())
+]).then(async ([strucText, infText]) => {
+    // Process struc
+    processSvg(strucText, false);
+    // Process inf
+    processSvg(infText, true);
 
-        pathsRef = Array.from(svgElement.querySelectorAll("path"));
+    // Apply once loaded if data arrived before SVG fetched
+    applyPathColorsToDOM();
+});
 
-        pathsRef.forEach((path, i) => {
-            // Setup base styles
-            path.setAttribute('fill', 'transparent');
-            path.style.transition = "all 0.2s ease";
-            path.style.cursor = "pointer";
-            path.style.pointerEvents = "painted";
+function processSvg(svgText, isInf) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgText, "image/svg+xml");
+    const svgElement = doc.documentElement;
 
-            path.addEventListener('click', (e) => {
-                if (!currentCrusadeId) return; // Prevent clicking before auth
+    svgElement.setAttribute('viewBox', '0 0 4050 2812.5');
+    svgElement.setAttribute('preserveAspectRatio', 'none');
 
-                const colors = ['transparent', '#E11D48', '#06B6D4', '#22C55E'];
+    if (isInf) {
+        const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+        ['blue', 'green', 'red'].forEach(color => {
+            const pat = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+            pat.setAttribute("id", `${color}_inf_pat`);
+            pat.setAttribute("patternUnits", "objectBoundingBox");
+            pat.setAttribute("patternContentUnits", "objectBoundingBox");
+            pat.setAttribute("width", "1");
+            pat.setAttribute("height", "1");
+
+            const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+            img.setAttribute("href", `main/assets/mapsicons/inf/${color}_inf.jpg`);
+            img.setAttribute("x", "0");
+            img.setAttribute("y", "0");
+            img.setAttribute("width", "1");
+            img.setAttribute("height", "1");
+            // Important to slice precisely inside path bounds
+            img.setAttribute("preserveAspectRatio", "none");
+
+            pat.appendChild(img);
+            defs.appendChild(pat);
+        });
+        svgElement.insertBefore(defs, svgElement.firstChild);
+    }
+
+    const thesePaths = Array.from(svgElement.querySelectorAll("path"));
+
+    thesePaths.forEach((path) => {
+        const globalIndex = pathsRef.length;
+        pathsRef.push(path);
+
+        // Setup base styles
+        path.setAttribute('fill', 'transparent');
+        path.style.transition = "all 0.2s ease";
+        path.style.cursor = "pointer";
+        path.style.pointerEvents = "painted";
+
+        path.addEventListener('click', (e) => {
+            if (!currentCrusadeId) return; // Prevent clicking before auth
+
+            let nextColor = 'transparent';
+
+            if (isInf) {
+                const patterns = ['transparent', 'url(#blue_inf_pat)', 'url(#green_inf_pat)', 'url(#red_inf_pat)'];
                 let currentFill = path.getAttribute('fill') || 'transparent';
-                currentFill = currentFill.toUpperCase();
+
+                let nextIndex = 1;
+                if (currentFill.includes('blue')) nextIndex = 2;
+                else if (currentFill.includes('green')) nextIndex = 3;
+                else if (currentFill.includes('red')) nextIndex = 0;
+
+                nextColor = patterns[nextIndex];
+            } else {
+                const colors = ['transparent', '#E11D48', '#06B6D4', '#22C55E'];
+                let currentFill = (path.getAttribute('fill') || 'transparent').toUpperCase();
 
                 let nextIndex = 1;
                 if (currentFill === '#E11D48') nextIndex = 2;
                 else if (currentFill === '#06B6D4') nextIndex = 3;
                 else if (currentFill === '#22C55E') nextIndex = 0;
 
-                const nextColor = colors[nextIndex];
+                nextColor = colors[nextIndex];
+            }
 
-                // Optimistic UI update
-                path.setAttribute('fill', nextColor);
-                if (nextColor === 'transparent') path.removeAttribute('fill-opacity');
-                else path.setAttribute('fill-opacity', '0.5');
+            // Optimistic UI update
+            path.setAttribute('fill', nextColor);
+            if (nextColor === 'transparent') {
+                path.removeAttribute('fill-opacity');
+            } else {
+                path.setAttribute('fill-opacity', isInf ? '1' : '0.5');
+            }
 
-                // Network Mutation: Update Path Color
-                mutateNetworkData((serverData) => {
-                    if (nextColor === 'transparent') {
-                        delete serverData.pathColors[i];
-                    } else {
-                        serverData.pathColors[i] = nextColor;
-                    }
-                });
-
-                e.preventDefault();
-                e.stopPropagation();
-            });
-
-            path.addEventListener('mouseenter', () => {
-                path.setAttribute('data-orig-stroke', path.getAttribute('stroke') || 'none');
-                path.setAttribute('data-orig-stroke-width', path.getAttribute('stroke-width') || '1');
-                path.setAttribute('stroke', '#E11D48');
-                path.setAttribute('stroke-width', '4');
-                path.setAttribute('opacity', '1');
-            });
-            path.addEventListener('mouseleave', () => {
-                path.setAttribute('stroke', path.getAttribute('data-orig-stroke'));
-                path.setAttribute('stroke-width', path.getAttribute('data-orig-stroke-width'));
-                if (!path.getAttribute('data-orig-stroke') || path.getAttribute('data-orig-stroke') === 'none') {
-                    path.removeAttribute('stroke');
+            // Network Mutation: Update Path Color
+            mutateNetworkData((serverData) => {
+                if (nextColor === 'transparent') {
+                    delete serverData.pathColors[globalIndex];
+                } else {
+                    serverData.pathColors[globalIndex] = nextColor;
                 }
             });
+
+            e.preventDefault();
+            e.stopPropagation();
         });
 
-        L.svgOverlay(svgElement, bounds, {
-            interactive: true,
-            className: 'affinity-pdf-layer'
-        }).addTo(map);
+        path.addEventListener('mouseenter', () => {
+            path.setAttribute('data-orig-stroke', path.getAttribute('stroke') || 'none');
+            path.setAttribute('data-orig-stroke-width', path.getAttribute('stroke-width') || '1');
+            path.setAttribute('stroke', '#E11D48');
+            path.setAttribute('stroke-width', '4');
 
-        // Apply once loaded if data arrived before SVG fetched
-        applyPathColorsToDOM();
+            if (path.getAttribute('fill') !== 'transparent' && isInf) {
+                path.setAttribute('opacity', '0.8');
+            } else {
+                path.setAttribute('opacity', '1');
+            }
+        });
+        path.addEventListener('mouseleave', () => {
+            path.setAttribute('stroke', path.getAttribute('data-orig-stroke'));
+            path.setAttribute('stroke-width', path.getAttribute('data-orig-stroke-width'));
+            path.setAttribute('opacity', '1');
+            if (!path.getAttribute('data-orig-stroke') || path.getAttribute('data-orig-stroke') === 'none') {
+                path.removeAttribute('stroke');
+            }
+        });
     });
+
+    L.svgOverlay(svgElement, bounds, {
+        interactive: true,
+        className: `affinity-pdf-layer layer-${isInf ? 'inf' : 'struc'}`
+    }).addTo(map);
+}
 
 function applyPathColorsToDOM() {
     if (!pathsRef || pathsRef.length === 0) return;
@@ -289,7 +348,7 @@ function applyPathColorsToDOM() {
         const savedColor = pathColors[i];
         if (savedColor) {
             path.setAttribute('fill', savedColor);
-            path.setAttribute('fill-opacity', '0.5');
+            path.setAttribute('fill-opacity', savedColor.includes('url(') ? '1' : '0.5');
         } else {
             path.setAttribute('fill', 'transparent');
             path.removeAttribute('fill-opacity');
