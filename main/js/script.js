@@ -269,11 +269,11 @@ function processSvg(svgText, isInf) {
 
         // Setup base styles to be completely invisible initially
         path.setAttribute('fill', 'none');
-        path.style.setProperty('fill', 'none', 'important'); // Override any inline Affinity styles
+        path.style.fill = 'none';
         path.setAttribute('fill-opacity', '0');
-        path.style.setProperty('fill-opacity', '0', 'important');
+        path.style.fillOpacity = '0';
         path.setAttribute('opacity', '0');
-        path.style.setProperty('opacity', '0', 'important');
+        path.style.opacity = '0';
         path.style.transition = "all 0.2s ease";
         path.style.cursor = "pointer";
         path.style.pointerEvents = "painted";
