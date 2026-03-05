@@ -230,8 +230,10 @@ function processSvg(svgText, isInf) {
     svgElement.setAttribute('preserveAspectRatio', 'none');
     svgElement.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
 
+    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+
+    // Create Inf Patterns (JPGs)
     if (isInf) {
-        const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
         ['blue', 'green', 'red'].forEach(color => {
             const pat = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
             pat.setAttribute("id", `${color}_inf_pat`);
@@ -241,21 +243,43 @@ function processSvg(svgText, isInf) {
             pat.setAttribute("height", "1");
 
             const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-            // Set both standard href and xlink:href for maximum browser compatibility
             img.setAttributeNS(null, "href", `main/assets/mapsicons/inf/${color}_inf.jpg`);
             img.setAttributeNS("http://www.w3.org/1999/xlink", "href", `main/assets/mapsicons/inf/${color}_inf.jpg`);
             img.setAttribute("x", "0");
             img.setAttribute("y", "0");
             img.setAttribute("width", "1");
             img.setAttribute("height", "1");
-            // Important to slice precisely inside path bounds
             img.setAttribute("preserveAspectRatio", "none");
 
             pat.appendChild(img);
             defs.appendChild(pat);
         });
-        svgElement.insertBefore(defs, svgElement.firstChild);
+    } else {
+        // Create Struc Patterns (PNGs) - 'stars' used as default example structural icon
+        // User has stars, bio, forge, sat in the /struc folder. We'll cycle stars for now as a generic replacement for colors.
+        ['red', 'blue', 'green'].forEach(color => {
+            const pat = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+            pat.setAttribute("id", `${color}_struc_pat`);
+            pat.setAttribute("patternUnits", "objectBoundingBox");
+            pat.setAttribute("patternContentUnits", "objectBoundingBox");
+            pat.setAttribute("width", "1");
+            pat.setAttribute("height", "1");
+
+            const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+            img.setAttributeNS(null, "href", `main/assets/mapsicons/struc/${color}_stars.png`);
+            img.setAttributeNS("http://www.w3.org/1999/xlink", "href", `main/assets/mapsicons/struc/${color}_stars.png`);
+            img.setAttribute("x", "0");
+            img.setAttribute("y", "0");
+            img.setAttribute("width", "1");
+            img.setAttribute("height", "1");
+            img.setAttribute("preserveAspectRatio", "none");
+
+            pat.appendChild(img);
+            defs.appendChild(pat);
+        });
     }
+
+    svgElement.insertBefore(defs, svgElement.firstChild);
 
     const thesePaths = Array.from(svgElement.querySelectorAll("path, rect, polygon, circle"));
 
@@ -286,15 +310,15 @@ function processSvg(svgText, isInf) {
 
                 nextColor = patterns[nextIndex];
             } else {
-                const colors = ['transparent', '#E11D48', '#06B6D4', '#22C55E'];
-                let currentFill = (path.style.fill || path.getAttribute('fill') || 'transparent').toUpperCase();
+                const patterns = ['transparent', 'url(#red_struc_pat)', 'url(#blue_struc_pat)', 'url(#green_struc_pat)'];
+                let currentFill = path.style.fill || path.getAttribute('fill') || 'transparent';
 
                 let nextIndex = 1;
-                if (currentFill === '#E11D48') nextIndex = 2;
-                else if (currentFill === '#06B6D4') nextIndex = 3;
-                else if (currentFill === '#22C55E') nextIndex = 0;
+                if (currentFill.includes('red')) nextIndex = 2;
+                else if (currentFill.includes('blue')) nextIndex = 3;
+                else if (currentFill.includes('green')) nextIndex = 0;
 
-                nextColor = colors[nextIndex];
+                nextColor = patterns[nextIndex];
             }
 
             // Optimistic UI update
@@ -304,7 +328,7 @@ function processSvg(svgText, isInf) {
                 path.removeAttribute('fill-opacity');
                 path.style.opacity = '1';
             } else {
-                path.setAttribute('fill-opacity', isInf ? '1' : '0.5');
+                path.setAttribute('fill-opacity', '1');
                 path.style.opacity = '1';
             }
 
