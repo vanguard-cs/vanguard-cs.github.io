@@ -257,7 +257,7 @@ function processSvg(svgText, isInf) {
         svgElement.insertBefore(defs, svgElement.firstChild);
     }
 
-    const thesePaths = Array.from(svgElement.querySelectorAll("path"));
+    const thesePaths = Array.from(svgElement.querySelectorAll("path, rect, polygon, circle"));
 
     thesePaths.forEach((path) => {
         const globalIndex = pathsRef.length;
@@ -265,6 +265,7 @@ function processSvg(svgText, isInf) {
 
         // Setup base styles
         path.setAttribute('fill', 'transparent');
+        path.style.fill = 'transparent'; // Override any inline Affinity styles
         path.style.transition = "all 0.2s ease";
         path.style.cursor = "pointer";
         path.style.pointerEvents = "painted";
@@ -276,7 +277,7 @@ function processSvg(svgText, isInf) {
 
             if (isInf) {
                 const patterns = ['transparent', 'url(#blue_inf_pat)', 'url(#green_inf_pat)', 'url(#red_inf_pat)'];
-                let currentFill = path.getAttribute('fill') || 'transparent';
+                let currentFill = path.style.fill || path.getAttribute('fill') || 'transparent';
 
                 let nextIndex = 1;
                 if (currentFill.includes('blue')) nextIndex = 2;
@@ -286,7 +287,7 @@ function processSvg(svgText, isInf) {
                 nextColor = patterns[nextIndex];
             } else {
                 const colors = ['transparent', '#E11D48', '#06B6D4', '#22C55E'];
-                let currentFill = (path.getAttribute('fill') || 'transparent').toUpperCase();
+                let currentFill = (path.style.fill || path.getAttribute('fill') || 'transparent').toUpperCase();
 
                 let nextIndex = 1;
                 if (currentFill === '#E11D48') nextIndex = 2;
@@ -298,10 +299,13 @@ function processSvg(svgText, isInf) {
 
             // Optimistic UI update
             path.setAttribute('fill', nextColor);
+            path.style.fill = nextColor;
             if (nextColor === 'transparent') {
                 path.removeAttribute('fill-opacity');
+                path.style.opacity = '1';
             } else {
                 path.setAttribute('fill-opacity', isInf ? '1' : '0.5');
+                path.style.opacity = '1';
             }
 
             // Network Mutation: Update Path Color
@@ -351,9 +355,11 @@ function applyPathColorsToDOM() {
         const savedColor = pathColors[i];
         if (savedColor) {
             path.setAttribute('fill', savedColor);
+            path.style.fill = savedColor;
             path.setAttribute('fill-opacity', savedColor.includes('url(') ? '1' : '0.5');
         } else {
             path.setAttribute('fill', 'transparent');
+            path.style.fill = 'transparent';
             path.removeAttribute('fill-opacity');
         }
     });
