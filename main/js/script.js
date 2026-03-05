@@ -1,10 +1,10 @@
-// Init Leaflet map
 const map = L.map('map', {
     crs: L.CRS.Simple,
     minZoom: -3,
     maxZoom: 2,
     zoomSnap: 0.5,
-    attributionControl: false
+    attributionControl: false,
+    doubleClickZoom: false
 });
 
 const imgWidth = 5400;
@@ -253,27 +253,31 @@ function processSvg(svgText, isInf) {
             defs.appendChild(pat);
         });
     } else {
-        // Create Struc Patterns (PNGs) - 'stars' used as default example structural icon
-        // User has stars, bio, forge, sat in the /struc folder. We'll cycle stars for now as a generic replacement for colors.
-        ['red', 'blue', 'green'].forEach(color => {
-            const pat = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
-            pat.setAttribute("id", `${color}_struc_pat`);
-            pat.setAttribute("patternUnits", "objectBoundingBox");
-            pat.setAttribute("patternContentUnits", "objectBoundingBox");
-            pat.setAttribute("width", "1");
-            pat.setAttribute("height", "1");
+        // Create Struc Patterns (PNGs) for all variants
+        const colors = ['red', 'blue', 'green'];
+        const types = ['stars', 'bio', 'forge', 'sat'];
 
-            const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-            img.setAttributeNS(null, "href", `main/assets/mapsicons/struc/${color}_stars.png`);
-            img.setAttributeNS("http://www.w3.org/1999/xlink", "href", `main/assets/mapsicons/struc/${color}_stars.png`);
-            img.setAttribute("x", "0");
-            img.setAttribute("y", "0");
-            img.setAttribute("width", "1");
-            img.setAttribute("height", "1");
-            img.setAttribute("preserveAspectRatio", "none");
+        colors.forEach(color => {
+            types.forEach(type => {
+                const pat = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+                pat.setAttribute("id", `${color}_${type}_struc_pat`);
+                pat.setAttribute("patternUnits", "objectBoundingBox");
+                pat.setAttribute("patternContentUnits", "objectBoundingBox");
+                pat.setAttribute("width", "1");
+                pat.setAttribute("height", "1");
 
-            pat.appendChild(img);
-            defs.appendChild(pat);
+                const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+                img.setAttributeNS(null, "href", `main/assets/mapsicons/struc/${color}_${type}.png`);
+                img.setAttributeNS("http://www.w3.org/1999/xlink", "href", `main/assets/mapsicons/struc/${color}_${type}.png`);
+                img.setAttribute("x", "0");
+                img.setAttribute("y", "0");
+                img.setAttribute("width", "1");
+                img.setAttribute("height", "1");
+                img.setAttribute("preserveAspectRatio", "none");
+
+                pat.appendChild(img);
+                defs.appendChild(pat);
+            });
         });
     }
 
@@ -308,13 +312,26 @@ function processSvg(svgText, isInf) {
 
                 nextColor = patterns[nextIndex];
             } else {
-                const patterns = ['transparent', 'url(#red_struc_pat)', 'url(#blue_struc_pat)', 'url(#green_struc_pat)'];
+                const patterns = [
+                    'transparent',
+                    'url(#red_stars_struc_pat)', 'url(#blue_stars_struc_pat)', 'url(#green_stars_struc_pat)',
+                    'url(#red_bio_struc_pat)', 'url(#blue_bio_struc_pat)', 'url(#green_bio_struc_pat)',
+                    'url(#red_forge_struc_pat)', 'url(#blue_forge_struc_pat)', 'url(#green_forge_struc_pat)',
+                    'url(#red_sat_struc_pat)', 'url(#blue_sat_struc_pat)', 'url(#green_sat_struc_pat)'
+                ];
                 let currentFill = path.style.fill || path.getAttribute('fill') || 'transparent';
 
-                let nextIndex = 1;
-                if (currentFill.includes('red')) nextIndex = 2;
-                else if (currentFill.includes('blue')) nextIndex = 3;
-                else if (currentFill.includes('green')) nextIndex = 0;
+                // Find exact match
+                let nextIndex = patterns.indexOf(currentFill) + 1;
+
+                // Fallback for DOM string manipulation artifacts (e.g. quotes or spacing)
+                if (nextIndex === 0) {
+                    const matchIndex = patterns.findIndex(p => p !== 'transparent' && (p.includes(currentFill) || currentFill.includes(p.replace(/['"]/g, ''))));
+                    nextIndex = (matchIndex !== -1 ? matchIndex : 0) + 1;
+                }
+
+                // Cycle loop
+                if (nextIndex >= patterns.length) nextIndex = 0;
 
                 nextColor = patterns[nextIndex];
             }
@@ -389,10 +406,6 @@ function applyPathColorsToDOM() {
 
 
 // Rendering POIs
-function getIconHtml(type) {
-    return `<div class="custom-marker-inner"></div>`;
-}
-
 function renderData() {
     // Clear Map
     Object.values(activeMarkers).forEach(m => map.removeLayer(m));
@@ -404,9 +417,8 @@ function renderData() {
 
     // Rebuild
     Object.values(pois).forEach(poi => {
-        const icon = L.divIcon({
-            className: `custom-marker ${poi.type}`,
-            html: getIconHtml(poi.type),
+        const icon = L.icon({
+            iconUrl: 'main/assets/mapsicons/poi.png',
             iconSize: [24, 24],
             iconAnchor: [12, 12],
             popupAnchor: [0, -12]
