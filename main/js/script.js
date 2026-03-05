@@ -321,17 +321,20 @@ function processSvg(svgText, isInf) {
                 ];
                 let currentFill = path.style.fill || path.getAttribute('fill') || 'transparent';
 
-                // Find exact match
-                let nextIndex = patterns.indexOf(currentFill) + 1;
+                // Sanitize any quotes the browser might artificially inject into the URL string
+                currentFill = currentFill.replace(/['"]/g, '').trim();
 
-                // Fallback for DOM string manipulation artifacts (e.g. quotes or spacing)
-                if (nextIndex === 0) {
-                    const matchIndex = patterns.findIndex(p => p !== 'transparent' && (p.includes(currentFill) || currentFill.includes(p.replace(/['"]/g, ''))));
-                    nextIndex = (matchIndex !== -1 ? matchIndex : 0) + 1;
+                let nextIndex = patterns.indexOf(currentFill);
+                if (nextIndex === -1) {
+                    nextIndex = 1;
+                } else {
+                    nextIndex++;
                 }
 
                 // Cycle loop
-                if (nextIndex >= patterns.length) nextIndex = 0;
+                if (nextIndex >= patterns.length) {
+                    nextIndex = 0;
+                }
 
                 nextColor = patterns[nextIndex];
             }
