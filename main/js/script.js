@@ -28,7 +28,7 @@ const btnAuth = document.getElementById('btn-auth-submit');
 const authMsg = document.getElementById('auth-message');
 
 btnAuth.addEventListener('click', async () => {
-    const requestedId = idInput.value.trim().toLowerCase();
+    const requestedId = idInput.value.trim();
     btnAuth.disabled = true;
     authMsg.style.display = 'block';
 
@@ -36,7 +36,7 @@ btnAuth.addEventListener('click', async () => {
         if (!requestedId) {
             authMsg.textContent = "Initializing new Cogitator link...";
             currentCrusadeId = await createCrusade();
-            idInput.value = currentCrusadeId.toUpperCase();
+            idInput.value = currentCrusadeId;
             authMsg.textContent = "Link established! Save this code.";
             // Wait a sec so they see the code
             setTimeout(() => {
