@@ -52,7 +52,7 @@ btnAuth.addEventListener('click', async () => {
             startAutoSync();
         }
     } catch (e) {
-        authMsg.textContent = "Error: Invalid ID or Network Failure.";
+        authMsg.textContent = e.message || "Error: Invalid ID or Network Failure.";
         authMsg.style.color = "var(--accent-red)";
         btnAuth.disabled = false;
     }
@@ -61,7 +61,7 @@ btnAuth.addEventListener('click', async () => {
 // Network API (Using JSONBin.io)
 // IMPORTANT: You will need to create a free account at https://jsonbin.io
 // Copy your Master Key and paste it below.
-const JSONBIN_MASTER_KEY = "$2a$10$YOUR_MASTER_KEY_HERE";
+const JSONBIN_MASTER_KEY = "$2a$10$KNHWHV/szJ8GHodhGmQEtOCPSSfMQhFpc0P7C9CO0UEhl9xj6fkxK";
 const JSONBIN_BASE_URL = "https://api.jsonbin.io/v3/b";
 
 const jsonbinHeaders = {
@@ -76,6 +76,11 @@ async function createCrusade() {
         headers: { ...jsonbinHeaders, "X-Bin-Name": "CrusadeMap_" + Date.now() },
         body: JSON.stringify(payload)
     });
+
+    if (!res.ok) {
+        throw new Error(`API Error (${res.status}): Make sure your JSONBIN_MASTER_KEY is valid!`);
+    }
+
     const data = await res.json();
     return data.metadata.id; // JSONBin v3 returns the ID in metadata.id
 }
