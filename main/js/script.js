@@ -61,7 +61,7 @@ btnAuth.addEventListener('click', async () => {
 // Network API (Using JSONBin.io)
 // IMPORTANT: You will need to create a free account at https://jsonbin.io
 // Copy your Master Key and paste it below.
-const JSONBIN_MASTER_KEY = "$2a$10$KNHWHV/szJ8GHodhGmQEtOCPSSfMQhFpc0P7C9CO0UEhl9xj6fkxK";
+const JSONBIN_MASTER_KEY = "$2a$10$jmRuucxCoyM669bfORca4uTRlrbPvfoueMAjFkWla2neXkKFDvd4u";
 const JSONBIN_BASE_URL = "https://api.jsonbin.io/v3/b";
 
 const jsonbinHeaders = {
