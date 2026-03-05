@@ -34,6 +34,14 @@ btnAuth.addEventListener('click', async () => {
 
     try {
         if (!requestedId) {
+            if (currentCrusadeId) {
+                // We already created the crusade, this is the user clicking to continue
+                authModal.classList.add('hidden');
+                refreshFromNetwork();
+                startAutoSync();
+                return;
+            }
+
             authMsg.textContent = "Initializing new Cogitator link...";
             currentCrusadeId = await createCrusade();
             idInput.value = currentCrusadeId;
@@ -41,14 +49,6 @@ btnAuth.addEventListener('click', async () => {
             authMsg.style.color = "var(--accent-gold)";
             btnAuth.textContent = "ENTER CAMPAIGN";
             btnAuth.disabled = false;
-
-            // Re-assign the click handler for the second step
-            btnAuth.onclick = (e) => {
-                e.preventDefault();
-                authModal.classList.add('hidden');
-                refreshFromNetwork();
-                startAutoSync();
-            };
         } else {
             authMsg.textContent = "Authenticating with server...";
             await verifyAndLoadCrusade(requestedId);
