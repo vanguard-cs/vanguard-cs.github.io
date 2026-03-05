@@ -111,37 +111,35 @@ async function verifyAndLoadCrusade(id) {
     applyPathColorsToDOM();
 }
 
-async function mutateNetworkData(localUpdatesCallback) {
+function mutateNetworkData(localUpdatesCallback) {
     if (!currentCrusadeId) return;
 
     try {
-        // 1. Fetch latest server state to prevent overwriting someone else's recent change
-        const res = await fetch(`${JSONBIN_BASE_URL}/${currentCrusadeId}/latest`, {
-            headers: jsonbinHeaders
-        });
-        const currentData = await res.json();
-        let serverData = currentData.record || {};
-
-        if (!serverData.pois) serverData.pois = {};
-        if (!serverData.pathColors) serverData.pathColors = {};
-
-        // 2. Apply our local mutation to the freshly fetched server data
+        // Local-only mutation to save API requests
+        const serverData = { pois, pathColors };
         localUpdatesCallback(serverData);
 
-        // 3. PUT the merged data back to the same Bin ID
-        await fetch(`${JSONBIN_BASE_URL}/${currentCrusadeId}`, {
-            method: "PUT",
-            headers: jsonbinHeaders,
-            body: JSON.stringify(serverData)
-        });
-
-        // 4. Update local ram and re-render
+        // Update local ram and re-render
         pois = serverData.pois;
         pathColors = serverData.pathColors;
         renderData();
 
+        // Visually prompt the user that they have unsaved network changes!
+        const btnExp = document.getElementById('btn-export');
+        if (btnExp) {
+            btnExp.innerHTML = `
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4.207a1 1 0 0 0-.293-.707l-2.5-2.5A1 1 0 0 0 10.5 1H2zm1 2h7.5L13 5.5v7.5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM5 4a1 1 0 0 0-1 1v2h4V5a1 1 0 0 0-1-1H5zm0 6a1 1 0 0 0-1 1v2h8v-2a1 1 0 0 0-1-1H5z"/>
+                </svg>
+                Publish Session (Unsaved Changes)
+            `;
+            btnExp.style.backgroundColor = "var(--accent-red)";
+            btnExp.style.borderColor = "var(--accent-red)";
+            btnExp.style.color = "white";
+        }
+
     } catch (e) {
-        console.error("Network Sync Error:", e);
+        console.error("Local Sync Error:", e);
     }
 }
 
@@ -166,8 +164,7 @@ async function refreshFromNetwork() {
 }
 
 function startAutoSync() {
-    // Poll the server every 5 seconds for other players' changes
-    setInterval(refreshFromNetwork, 5000);
+    // Polling has been disabled per user request to conserve JSONBin free allotment requests!
 }
 
 
@@ -229,6 +226,7 @@ function processSvg(svgText, isInf) {
     svgElement.setAttribute('viewBox', '0 0 4050 2812.5');
     svgElement.setAttribute('preserveAspectRatio', 'none');
     svgElement.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+    svgElement.style.pointerEvents = 'none'; // CRITICAL: Stop the map-wide SVG from trapping clicks so layers underneath can be accessed!
 
     const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
 
@@ -507,11 +505,43 @@ form.addEventListener('submit', (e) => {
     });
 });
 
-btnExport.addEventListener('click', () => {
-    const backupData = { pois, pathColors, id: currentCrusadeId };
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-    const dlAnchorElem = document.createElement('a');
-    dlAnchorElem.setAttribute("href", dataStr);
-    dlAnchorElem.setAttribute("download", `500_worlds_crusade_${currentCrusadeId}.json`);
-    dlAnchorElem.click();
+btnExport.addEventListener('click', async () => {
+    if (!currentCrusadeId) return;
+
+    btnExport.textContent = "SAVING NETWORK...";
+    btnExport.style.pointerEvents = 'none';
+
+    try {
+        const payload = { pois, pathColors };
+        await fetch(`${JSONBIN_BASE_URL}/${currentCrusadeId}`, {
+            method: "PUT",
+            headers: jsonbinHeaders,
+            body: JSON.stringify(payload)
+        });
+
+        // Reset button
+        btnExport.innerHTML = `
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4.207a1 1 0 0 0-.293-.707l-2.5-2.5A1 1 0 0 0 10.5 1H2zm1 2h7.5L13 5.5v7.5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM5 4a1 1 0 0 0-1 1v2h4V5a1 1 0 0 0-1-1H5zm0 6a1 1 0 0 0-1 1v2h8v-2a1 1 0 0 0-1-1H5z"/>
+            </svg>
+            Session Cache Saved!
+        `;
+        btnExport.style.backgroundColor = "";
+        btnExport.style.borderColor = "";
+        btnExport.style.color = "";
+        btnExport.style.pointerEvents = 'auto';
+
+        setTimeout(() => {
+            btnExport.innerHTML = `
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4.207a1 1 0 0 0-.293-.707l-2.5-2.5A1 1 0 0 0 10.5 1H2zm1 2h7.5L13 5.5v7.5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM5 4a1 1 0 0 0-1 1v2h4V5a1 1 0 0 0-1-1H5zm0 6a1 1 0 0 0-1 1v2h8v-2a1 1 0 0 0-1-1H5z"/>
+                </svg>
+                Save Session Cache
+            `;
+        }, 2500);
+    } catch (e) {
+        console.error("Save Error:", e);
+        btnExport.innerHTML = "API ERROR - TRY AGAIN";
+        btnExport.style.pointerEvents = 'auto';
+    }
 });
