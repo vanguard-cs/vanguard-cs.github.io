@@ -228,6 +228,7 @@ function processSvg(svgText, isInf) {
 
     svgElement.setAttribute('viewBox', '0 0 4050 2812.5');
     svgElement.setAttribute('preserveAspectRatio', 'none');
+    svgElement.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
 
     if (isInf) {
         const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
@@ -240,7 +241,9 @@ function processSvg(svgText, isInf) {
             pat.setAttribute("height", "1");
 
             const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-            img.setAttribute("href", `main/assets/mapsicons/inf/${color}_inf.jpg`);
+            // Set both standard href and xlink:href for maximum browser compatibility
+            img.setAttributeNS(null, "href", `main/assets/mapsicons/inf/${color}_inf.jpg`);
+            img.setAttributeNS("http://www.w3.org/1999/xlink", "href", `main/assets/mapsicons/inf/${color}_inf.jpg`);
             img.setAttribute("x", "0");
             img.setAttribute("y", "0");
             img.setAttribute("width", "1");
