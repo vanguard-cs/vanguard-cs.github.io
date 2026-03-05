@@ -37,13 +37,18 @@ btnAuth.addEventListener('click', async () => {
             authMsg.textContent = "Initializing new Cogitator link...";
             currentCrusadeId = await createCrusade();
             idInput.value = currentCrusadeId;
-            authMsg.textContent = "Link established! Save this code.";
-            // Wait a sec so they see the code
-            setTimeout(() => {
+            authMsg.textContent = "Link established! Save this code. Click button again to continue.";
+            authMsg.style.color = "var(--accent-gold)";
+            btnAuth.textContent = "ENTER CAMPAIGN";
+            btnAuth.disabled = false;
+
+            // Re-assign the click handler for the second step
+            btnAuth.onclick = (e) => {
+                e.preventDefault();
                 authModal.classList.add('hidden');
                 refreshFromNetwork();
                 startAutoSync();
-            }, 2000);
+            };
         } else {
             authMsg.textContent = "Authenticating with server...";
             await verifyAndLoadCrusade(requestedId);
@@ -60,25 +65,29 @@ btnAuth.addEventListener('click', async () => {
 
 // Network API (Using JSONBin.io)
 // IMPORTANT: You will need to create a free account at https://jsonbin.io
-// Copy your Master Key and paste it below.
-const JSONBIN_MASTER_KEY = "$2a$10$H4vniPlHO4v2R0pwvIqcr.PkQJf68LbFUxXIddVw4HqVG9b7bReA2";
+const JSONBIN_ACCESS_KEY = "$2a$10$H4vniPlHO4v2R0pwvIqcr.PkQJf68LbFUxXIddVw4HqVG9b7bReA2";
+const JSONBIN_COLLECTION_ID = "69a8d106ae596e708f6026f7";
 const JSONBIN_BASE_URL = "https://api.jsonbin.io/v3/b";
 
 const jsonbinHeaders = {
     "Content-Type": "application/json",
-    "X-Master-Key": JSONBIN_MASTER_KEY
+    "X-Access-Key": JSONBIN_ACCESS_KEY
 };
 
 async function createCrusade() {
     const payload = { pois: {}, pathColors: {} };
     const res = await fetch(JSONBIN_BASE_URL, {
         method: "POST",
-        headers: { ...jsonbinHeaders, "X-Bin-Name": "CrusadeMap_" + Date.now() },
+        headers: {
+            ...jsonbinHeaders,
+            "X-Bin-Name": "CrusadeMap_" + Date.now(),
+            "X-Collection-Id": JSONBIN_COLLECTION_ID
+        },
         body: JSON.stringify(payload)
     });
 
     if (!res.ok) {
-        throw new Error(`API Error (${res.status}): Make sure your JSONBIN_MASTER_KEY is valid!`);
+        throw new Error(`API Error (${res.status}): Validation failed. Make sure your JSONBIN Access Key and Collection ID are valid!`);
     }
 
     const data = await res.json();
