@@ -21,6 +21,11 @@ let pois = {}; // Changed to object for easier merging by ID
 let pathColors = {};
 let currentCrusadeId = null;
 let currentFaction = 'global'; // Track selected role
+let activeBrush = 'red'; // Default to red brush
+
+document.getElementById('active-brush-select').addEventListener('change', (e) => {
+    activeBrush = e.target.value;
+});
 
 // Auth Modal UI
 const authModal = document.getElementById('auth-modal');
@@ -41,6 +46,18 @@ btnAuth.addEventListener('click', async () => {
         } else {
             authMsg.textContent = "Authenticating with server...";
             currentFaction = document.getElementById('faction-select').value;
+
+            const brushSelect = document.getElementById('active-brush-select');
+            if (currentFaction !== 'global') {
+                brushSelect.value = currentFaction;
+                brushSelect.parentElement.style.display = 'none'; // Hide it entirely for players
+                activeBrush = currentFaction;
+            } else {
+                brushSelect.parentElement.style.display = 'block'; // Show it for global GM
+                brushSelect.disabled = false;
+                activeBrush = brushSelect.value;
+            }
+
             await verifyAndLoadCrusade(requestedId);
             currentCrusadeId = requestedId;
             authModal.classList.add('hidden');
@@ -286,16 +303,11 @@ function processSvg(svgText, isInf) {
             let currentFill = path.style.fill || path.getAttribute('fill') || 'transparent';
 
             if (isInf) {
-                let patterns = [];
-                if (currentFaction === 'global') {
-                    patterns = ['transparent', 'url(#blue_inf_pat)', 'url(#green_inf_pat)', 'url(#red_inf_pat)'];
-                } else {
-                    patterns = ['transparent', `url(#${currentFaction}_inf_pat)`];
-                }
+                let patterns = ['transparent', `url(#${activeBrush}_inf_pat)`];
 
                 let nextIndex = 1;
                 for (let i = 1; i < patterns.length; i++) {
-                    const cleanId = patterns[i].replace(/[url()#]/g, '');
+                    const cleanId = patterns[i].replace('url(#', '').replace(')', '');
                     if (currentFill.indexOf(cleanId) !== -1) {
                         nextIndex = i + 1;
                         break;
@@ -304,28 +316,17 @@ function processSvg(svgText, isInf) {
                 if (nextIndex >= patterns.length) nextIndex = 0;
                 nextColor = patterns[nextIndex];
             } else {
-                let patterns = [];
-                if (currentFaction === 'global') {
-                    patterns = [
-                        'transparent',
-                        'url(#red_stars_struc_pat)', 'url(#blue_stars_struc_pat)', 'url(#green_stars_struc_pat)',
-                        'url(#red_bio_struc_pat)', 'url(#blue_bio_struc_pat)', 'url(#green_bio_struc_pat)',
-                        'url(#red_forge_struc_pat)', 'url(#blue_forge_struc_pat)', 'url(#green_forge_struc_pat)',
-                        'url(#red_sat_struc_pat)', 'url(#blue_sat_struc_pat)', 'url(#green_sat_struc_pat)'
-                    ];
-                } else {
-                    patterns = [
-                        'transparent',
-                        `url(#${currentFaction}_stars_struc_pat)`,
-                        `url(#${currentFaction}_bio_struc_pat)`,
-                        `url(#${currentFaction}_forge_struc_pat)`,
-                        `url(#${currentFaction}_sat_struc_pat)`
-                    ];
-                }
+                let patterns = [
+                    'transparent',
+                    `url(#${activeBrush}_stars_struc_pat)`,
+                    `url(#${activeBrush}_bio_struc_pat)`,
+                    `url(#${activeBrush}_forge_struc_pat)`,
+                    `url(#${activeBrush}_sat_struc_pat)`
+                ];
 
                 let nextIndex = 1;
                 for (let i = 1; i < patterns.length; i++) {
-                    const cleanId = patterns[i].replace(/[url()#]/g, '');
+                    const cleanId = patterns[i].replace('url(#', '').replace(')', '');
                     if (currentFill.indexOf(cleanId) !== -1) {
                         nextIndex = i + 1;
                         break;
