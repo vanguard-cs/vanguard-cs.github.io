@@ -16,18 +16,10 @@ const map = L.map('map', {
 const imageOverlay = L.imageOverlay('main/assets/map_background_extracted.jpeg', bounds).addTo(map);
 
 map.fitBounds(bounds);
-map.setView([imgHeight / 2, imgWidth / 2], -1);
-
-// Dynamically scale fleet tokens and orbits based on map zoom
-function updateFleetScale() {
-    // Arbitrary math that looks good at zoom levels -3 to 2
-    const currentZoom = map.getZoom();
-    // At zoom 0, scale is 1. At zoom -3, scale is 8. At zoom 2, scale is 0.25.
-    const scaleFactor = Math.pow(2, -currentZoom);
-    document.documentElement.style.setProperty('--fleet-zoom-scale', scaleFactor);
-}
-map.on('zoom', updateFleetScale);
-updateFleetScale(); // Initial call
+// Ensure the user cannot zoom out further than fitting the map to their screen size
+const minZoomLevel = map.getBoundsZoom(bounds);
+map.setMinZoom(minZoomLevel);
+map.setView([imgHeight / 2, imgWidth / 2], minZoomLevel);
 
 // Persistent Storage & Multiplayer Sync
 let pois = {}; // Changed to object for easier merging by ID
