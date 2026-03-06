@@ -273,10 +273,18 @@ function processSvg(svgText, isInf) {
     svgElement.insertBefore(defs, svgElement.firstChild);
 
     const thesePaths = Array.from(svgElement.querySelectorAll("path, rect, polygon, circle"));
+    let infPathCounter = 0;
 
     thesePaths.forEach((path) => {
         const globalIndex = pathsRef.length;
         pathsRef.push(path);
+
+        path.dataset.isInf = isInf.toString();
+        if (isInf) {
+            path.dataset.relIndex = (infPathCounter % 15).toString();
+            path.dataset.colIndex = (infPathCounter % 3).toString();
+            infPathCounter++;
+        }
 
         // Setup base styles
         path.setAttribute('fill', 'transparent');
@@ -287,6 +295,33 @@ function processSvg(svgText, isInf) {
 
         path.addEventListener('click', (e) => {
             if (!currentCrusadeId) return; // Prevent clicking before auth
+
+            // Influence Track Restrictions
+            if (path.dataset.isInf === 'true') {
+                const colIndex = parseInt(path.dataset.colIndex);
+                const relIndex = parseInt(path.dataset.relIndex);
+
+                // Lock the bottom "0" row permanently
+                if (relIndex >= 12) {
+                    alert("Auspex Interference: This base level of influence is permanent and cannot be scrubbed.");
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+
+                // Restrict column by active brush
+                let allowedColor = '';
+                if (colIndex === 0) allowedColor = 'blue';
+                else if (colIndex === 1) allowedColor = 'red';
+                else if (colIndex === 2) allowedColor = 'green';
+
+                if (activeBrush !== allowedColor) {
+                    alert(`Cogitator Error: This column exclusively accepts ${allowedColor.toUpperCase()} influence datastreams.`);
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+            }
 
             // Occupancy Check
             let currentStoredColor = pathColors[globalIndex] || 'transparent';
@@ -396,6 +431,18 @@ function applyPathColorsToDOM() {
     if (!pathsRef || pathsRef.length === 0) return;
     pathsRef.forEach((path, i) => {
         let savedColor = pathColors[i];
+
+        if (path.dataset.isInf === 'true') {
+            const relIndex = parseInt(path.dataset.relIndex);
+            const colIndex = parseInt(path.dataset.colIndex);
+
+            // Bottom row initialization defaults!
+            if (relIndex >= 12 && (!savedColor || savedColor === 'transparent')) {
+                if (colIndex === 0) savedColor = 'url(#blue_inf_pat)';
+                if (colIndex === 1) savedColor = 'url(#red_inf_pat)';
+                if (colIndex === 2) savedColor = 'url(#green_inf_pat)';
+            }
+        }
 
         // Process visibility rules
         if (currentFaction !== 'global' && savedColor && savedColor !== 'transparent') {
