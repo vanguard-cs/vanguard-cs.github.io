@@ -291,22 +291,18 @@ function processSvg(svgText, isInf) {
                 ];
                 let currentFill = path.style.fill || path.getAttribute('fill') || 'transparent';
 
-                // Extract exact #id because browser DOM mutates local url(#id) into absolute domains sometimes
-                const hashMatch = currentFill.match(/#([a-zA-Z0-9_]+)/);
-                if (hashMatch) {
-                    currentFill = `url(#${hashMatch[1]})`;
-                } else if (!currentFill.includes('url')) {
-                    currentFill = 'transparent';
-                }
-
-                let nextIndex = patterns.indexOf(currentFill);
-                if (nextIndex === -1) {
-                    nextIndex = 1;
-                } else {
-                    nextIndex++;
+                // Robust fallback search: Some browsers mutate `url('#id')` rapidly. Look up by raw substring match.
+                let nextIndex = 1;
+                for (let i = 1; i < patterns.length; i++) {
+                    const cleanId = patterns[i].replace(/[url()#]/g, '');
+                    if (currentFill.indexOf(cleanId) !== -1) {
+                        nextIndex = i + 1;
+                        break;
+                    }
                 }
 
                 // Cycle loop
+
                 if (nextIndex >= patterns.length) {
                     nextIndex = 0;
                 }
