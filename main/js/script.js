@@ -596,8 +596,10 @@ function renderData() {
         const isOwned = currentFaction === 'global' || currentFaction === f.faction;
 
         const htmlContent = `
-            <div class="fleet-token ${isOwned ? 'interactive' : ''} ${activeMovingFleetId === fleetId ? 'selected' : ''}">
-                <img src="main/assets/mapsicons/Fleet Icons/${f.faction}_fleet.png" style="width: 100%; height: 100%;">
+            <div class="fleet-orbit-wrapper ${activeMovingFleetId === fleetId ? 'selected' : ''}">
+                <div class="fleet-token ${isOwned ? 'interactive' : ''}">
+                    <img src="main/assets/mapsicons/Fleet Icons/${f.faction}_fleet.png" style="width: 100%; height: 100%;">
+                </div>
             </div>
         `;
 
