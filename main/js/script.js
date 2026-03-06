@@ -34,20 +34,8 @@ btnAuth.addEventListener('click', async () => {
 
     try {
         if (!requestedId) {
-            if (currentCrusadeId) {
-                // We already created the crusade, this is the user clicking to continue
-                authModal.classList.add('hidden');
-                refreshFromNetwork();
-                startAutoSync();
-                return;
-            }
-
-            authMsg.textContent = "Initializing new Cogitator link...";
-            currentCrusadeId = await createCrusade();
-            idInput.value = currentCrusadeId;
-            authMsg.textContent = "Link established! Save this code. Click button again to continue.";
-            authMsg.style.color = "var(--accent-gold)";
-            btnAuth.textContent = "ENTER CAMPAIGN";
+            authMsg.textContent = "Access Denied: Please enter a valid Crusade ID.";
+            authMsg.style.color = "var(--accent-red)";
             btnAuth.disabled = false;
         } else {
             authMsg.textContent = "Authenticating with server...";
@@ -74,25 +62,7 @@ const jsonbinHeaders = {
     "X-Access-Key": JSONBIN_ACCESS_KEY
 };
 
-async function createCrusade() {
-    const payload = { pois: {}, pathColors: {} };
-    const res = await fetch(JSONBIN_BASE_URL, {
-        method: "POST",
-        headers: {
-            ...jsonbinHeaders,
-            "X-Bin-Name": "CrusadeMap_" + Date.now(),
-            "X-Collection-Id": JSONBIN_COLLECTION_ID
-        },
-        body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) {
-        throw new Error(`API Error (${res.status}): Validation failed. Make sure your JSONBIN Access Key and Collection ID are valid!`);
-    }
-
-    const data = await res.json();
-    return data.metadata.id; // JSONBin v3 returns the ID in metadata.id
-}
+// Bin creation is now managed externally at the JSONBin provider level.
 
 async function verifyAndLoadCrusade(id) {
     const res = await fetch(`${JSONBIN_BASE_URL}/${id}/latest`, {
@@ -321,8 +291,13 @@ function processSvg(svgText, isInf) {
                 ];
                 let currentFill = path.style.fill || path.getAttribute('fill') || 'transparent';
 
-                // Sanitize any quotes the browser might artificially inject into the URL string
-                currentFill = currentFill.replace(/['"]/g, '').trim();
+                // Extract exact #id because browser DOM mutates local url(#id) into absolute domains sometimes
+                const hashMatch = currentFill.match(/#([a-zA-Z0-9_]+)/);
+                if (hashMatch) {
+                    currentFill = `url(#${hashMatch[1]})`;
+                } else if (!currentFill.includes('url')) {
+                    currentFill = 'transparent';
+                }
 
                 let nextIndex = patterns.indexOf(currentFill);
                 if (nextIndex === -1) {
