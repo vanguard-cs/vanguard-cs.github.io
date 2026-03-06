@@ -20,6 +20,7 @@ map.setView([imgHeight / 2, imgWidth / 2], -1);
 let pois = {}; // Changed to object for easier merging by ID
 let pathColors = {};
 let currentCrusadeId = null;
+let currentFaction = 'global'; // Track selected role
 
 // Auth Modal UI
 const authModal = document.getElementById('auth-modal');
@@ -39,6 +40,7 @@ btnAuth.addEventListener('click', async () => {
             btnAuth.disabled = false;
         } else {
             authMsg.textContent = "Authenticating with server...";
+            currentFaction = document.getElementById('faction-select').value;
             await verifyAndLoadCrusade(requestedId);
             currentCrusadeId = requestedId;
             authModal.classList.add('hidden');
@@ -269,29 +271,28 @@ function processSvg(svgText, isInf) {
         path.addEventListener('click', (e) => {
             if (!currentCrusadeId) return; // Prevent clicking before auth
 
+            // Occupancy Check
+            let currentStoredColor = pathColors[globalIndex] || 'transparent';
+            if (currentFaction !== 'global') {
+                if (currentStoredColor !== 'transparent' && !currentStoredColor.includes(currentFaction)) {
+                    alert("Auspex interference blocked link: Region is locked by a scrambling broadcast.");
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+            }
+
             let nextColor = 'transparent';
+            let currentFill = path.style.fill || path.getAttribute('fill') || 'transparent';
 
             if (isInf) {
-                const patterns = ['transparent', 'url(#blue_inf_pat)', 'url(#green_inf_pat)', 'url(#red_inf_pat)'];
-                let currentFill = path.style.fill || path.getAttribute('fill') || 'transparent';
+                let patterns = [];
+                if (currentFaction === 'global') {
+                    patterns = ['transparent', 'url(#blue_inf_pat)', 'url(#green_inf_pat)', 'url(#red_inf_pat)'];
+                } else {
+                    patterns = ['transparent', `url(#${currentFaction}_inf_pat)`];
+                }
 
-                let nextIndex = 1;
-                if (currentFill.includes('blue')) nextIndex = 2;
-                else if (currentFill.includes('green')) nextIndex = 3;
-                else if (currentFill.includes('red')) nextIndex = 0;
-
-                nextColor = patterns[nextIndex];
-            } else {
-                const patterns = [
-                    'transparent',
-                    'url(#red_stars_struc_pat)', 'url(#blue_stars_struc_pat)', 'url(#green_stars_struc_pat)',
-                    'url(#red_bio_struc_pat)', 'url(#blue_bio_struc_pat)', 'url(#green_bio_struc_pat)',
-                    'url(#red_forge_struc_pat)', 'url(#blue_forge_struc_pat)', 'url(#green_forge_struc_pat)',
-                    'url(#red_sat_struc_pat)', 'url(#blue_sat_struc_pat)', 'url(#green_sat_struc_pat)'
-                ];
-                let currentFill = path.style.fill || path.getAttribute('fill') || 'transparent';
-
-                // Robust fallback search: Some browsers mutate `url('#id')` rapidly. Look up by raw substring match.
                 let nextIndex = 1;
                 for (let i = 1; i < patterns.length; i++) {
                     const cleanId = patterns[i].replace(/[url()#]/g, '');
@@ -300,8 +301,36 @@ function processSvg(svgText, isInf) {
                         break;
                     }
                 }
+                if (nextIndex >= patterns.length) nextIndex = 0;
+                nextColor = patterns[nextIndex];
+            } else {
+                let patterns = [];
+                if (currentFaction === 'global') {
+                    patterns = [
+                        'transparent',
+                        'url(#red_stars_struc_pat)', 'url(#blue_stars_struc_pat)', 'url(#green_stars_struc_pat)',
+                        'url(#red_bio_struc_pat)', 'url(#blue_bio_struc_pat)', 'url(#green_bio_struc_pat)',
+                        'url(#red_forge_struc_pat)', 'url(#blue_forge_struc_pat)', 'url(#green_forge_struc_pat)',
+                        'url(#red_sat_struc_pat)', 'url(#blue_sat_struc_pat)', 'url(#green_sat_struc_pat)'
+                    ];
+                } else {
+                    patterns = [
+                        'transparent',
+                        `url(#${currentFaction}_stars_struc_pat)`,
+                        `url(#${currentFaction}_bio_struc_pat)`,
+                        `url(#${currentFaction}_forge_struc_pat)`,
+                        `url(#${currentFaction}_sat_struc_pat)`
+                    ];
+                }
 
-                // Cycle loop
+                let nextIndex = 1;
+                for (let i = 1; i < patterns.length; i++) {
+                    const cleanId = patterns[i].replace(/[url()#]/g, '');
+                    if (currentFill.indexOf(cleanId) !== -1) {
+                        nextIndex = i + 1;
+                        break;
+                    }
+                }
 
                 if (nextIndex >= patterns.length) {
                     nextIndex = 0;
@@ -365,8 +394,17 @@ function processSvg(svgText, isInf) {
 function applyPathColorsToDOM() {
     if (!pathsRef || pathsRef.length === 0) return;
     pathsRef.forEach((path, i) => {
-        const savedColor = pathColors[i];
-        if (savedColor) {
+        let savedColor = pathColors[i];
+
+        // Process visibility rules
+        if (currentFaction !== 'global' && savedColor && savedColor !== 'transparent') {
+            if (!savedColor.includes(currentFaction)) {
+                // Not global, and the color belongs to a different faction. Hide it visually!
+                savedColor = 'transparent';
+            }
+        }
+
+        if (savedColor && savedColor !== 'transparent') {
             path.setAttribute('fill', savedColor);
             path.style.fill = savedColor;
             path.setAttribute('fill-opacity', savedColor.includes('url(') ? '1' : '0.5');

@@ -74,6 +74,16 @@
                 <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">Enter a valid Crusade ID to
                     join the campaign data-link.</p>
                 <div class="form-group">
+                    <label>Faction / Clearance Level</label>
+                    <select id="faction-select"
+                        style="width: 100%; padding: 10px; border-radius: 5px; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--accent-cyan); color: var(--text-light); text-transform: uppercase;">
+                        <option value="global">Global (Game Master)</option>
+                        <option value="red">Red Faction</option>
+                        <option value="blue">Blue Faction</option>
+                        <option value="green">Green Faction</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Crusade ID (Access Code)</label>
                     <input type="text" id="crusade-id-input" placeholder="e.g. Crusade-X7Q9P" autocomplete="off">
                 </div>
