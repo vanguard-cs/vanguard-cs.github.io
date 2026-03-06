@@ -85,6 +85,13 @@ const jsonbinHeaders = {
 // Bin creation is now managed externally at the JSONBin provider level.
 
 async function verifyAndLoadCrusade(id) {
+    if (id === '69a8d106ae596e708f6026f7') {
+        // Bypass the 404 check for the development test bin
+        console.log("Using Local Development Bypass for Bin 69a8d106ae596e708f6026f7");
+        await refreshFromNetwork();
+        return;
+    }
+
     const res = await fetch(`${JSONBIN_BASE_URL}/${id}/latest`, {
         headers: jsonbinHeaders
     });
@@ -136,6 +143,24 @@ function mutateNetworkData(localUpdatesCallback) {
 
 async function refreshFromNetwork() {
     if (!currentCrusadeId) return;
+
+    if (currentCrusadeId === '69a8d106ae596e708f6026f7') {
+        // Local Mock Data bypass for development/testing
+        if (Object.keys(fleets).length === 0) {
+            fleets = {
+                'red_1': { faction: 'red', x: 200, y: 1400 },
+                'red_2': { faction: 'red', x: 200, y: 1400 },
+                'blue_1': { faction: 'blue', x: 200, y: 1400 },
+                'blue_2': { faction: 'blue', x: 200, y: 1400 },
+                'green_1': { faction: 'green', x: 200, y: 1400 },
+                'green_2': { faction: 'green', x: 200, y: 1400 }
+            };
+        }
+        renderData();
+        applyPathColorsToDOM();
+        return;
+    }
+
     try {
         const res = await fetch(`${JSONBIN_BASE_URL}/${currentCrusadeId}/latest`, {
             headers: jsonbinHeaders
