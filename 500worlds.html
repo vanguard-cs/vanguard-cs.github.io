@@ -19,14 +19,14 @@
         /* The wrapper handles the large orbital rotation */
         .fleet-orbit-wrapper {
             position: absolute;
-            /* 200px base radius creates a 500% larger sweep than the original 40px diameter */
-            width: 200px;
-            height: 200px;
+            /* 200px base radius * current zoom scale */
+            width: calc(200px * var(--fleet-zoom-scale, 1));
+            height: calc(200px * var(--fleet-zoom-scale, 1));
             top: 50%;
             left: 50%;
             /* Offset negative margins to true center the wrapper on the Leaflet LatLng */
-            margin-left: -100px;
-            margin-top: -100px;
+            margin-left: calc(-100px * var(--fleet-zoom-scale, 1));
+            margin-top: calc(-100px * var(--fleet-zoom-scale, 1));
 
             animation: orbit 15s linear infinite;
             display: flex;
@@ -39,9 +39,9 @@
 
         /* The token itself sits inside the wrapper and counter-rotates to stay upright */
         .fleet-token {
-            /* 60px fixed token size, no longer scaling with map zoom */
-            width: 60px;
-            height: 60px;
+            /* 60px base token size * current zoom scale */
+            width: calc(60px * var(--fleet-zoom-scale, 1));
+            height: calc(60px * var(--fleet-zoom-scale, 1));
             filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
             transition: filter 0.3s ease;
             position: absolute;

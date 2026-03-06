@@ -21,6 +21,16 @@ const minZoomLevel = map.getBoundsZoom(bounds);
 map.setMinZoom(minZoomLevel);
 map.setView([imgHeight / 2, imgWidth / 2], minZoomLevel);
 
+// Dynamically scale fleets 1:1 with map zoom
+function updateFleetScale() {
+    const currentZoom = map.getZoom();
+    // Leaflet map scales by a power of 2 for every 1.0 zoom level step
+    const scaleFactor = Math.pow(2, currentZoom - minZoomLevel);
+    document.documentElement.style.setProperty('--fleet-zoom-scale', scaleFactor);
+}
+map.on('zoom', updateFleetScale);
+updateFleetScale(); // Call immediately to set initial scale
+
 // Persistent Storage & Multiplayer Sync
 let pois = {}; // Changed to object for easier merging by ID
 let pathColors = {};
