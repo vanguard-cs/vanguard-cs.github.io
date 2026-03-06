@@ -1,20 +1,33 @@
+const imgWidth = 5400;
+const imgHeight = 3750;
+const bounds = [[0, 0], [imgHeight, imgWidth]];
+
 const map = L.map('map', {
     crs: L.CRS.Simple,
     minZoom: -3,
     maxZoom: 2,
     zoomSnap: 0.5,
     attributionControl: false,
-    doubleClickZoom: false
+    doubleClickZoom: false,
+    maxBounds: bounds,
+    maxBoundsViscosity: 1.0
 });
-
-const imgWidth = 5400;
-const imgHeight = 3750;
-const bounds = [[0, 0], [imgHeight, imgWidth]];
 
 const imageOverlay = L.imageOverlay('main/assets/map_background_extracted.jpeg', bounds).addTo(map);
 
 map.fitBounds(bounds);
 map.setView([imgHeight / 2, imgWidth / 2], -1);
+
+// Dynamically scale fleet tokens and orbits based on map zoom
+function updateFleetScale() {
+    // Arbitrary math that looks good at zoom levels -3 to 2
+    const currentZoom = map.getZoom();
+    // At zoom 0, scale is 1. At zoom -3, scale is 8. At zoom 2, scale is 0.25.
+    const scaleFactor = Math.pow(2, -currentZoom);
+    document.documentElement.style.setProperty('--fleet-zoom-scale', scaleFactor);
+}
+map.on('zoom', updateFleetScale);
+updateFleetScale(); // Initial call
 
 // Persistent Storage & Multiplayer Sync
 let pois = {}; // Changed to object for easier merging by ID
