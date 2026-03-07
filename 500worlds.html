@@ -20,8 +20,8 @@
         .fleet-orbit-wrapper {
             position: absolute;
             /* 200px base radius * current zoom scale */
-            width: calc(100px * var(--fleet-zoom-scale, 1));
-            height: calc(100px * var(--fleet-zoom-scale, 1));
+            width: calc(150px * var(--fleet-zoom-scale, 1));
+            height: calc(150px * var(--fleet-zoom-scale, 1));
             top: 50%;
             left: 50%;
             /* Offset negative margins to true center the 100px wrapper on the Leaflet LatLng */
@@ -31,7 +31,7 @@
             /* Perfectly sync CSS dimension changes with Leaflet's 0.25s native zoom animation */
             transition: width 0.25s cubic-bezier(0, 0, 0.25, 1), height 0.25s cubic-bezier(0, 0, 0.25, 1);
 
-            animation: orbit 30s linear infinite;
+            animation: orbit 60s linear infinite;
             /* Let map clicks pass through the huge invisible orbit */
             pointer-events: none;
 
