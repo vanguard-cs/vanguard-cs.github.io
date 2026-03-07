@@ -600,8 +600,8 @@ function renderData() {
         const group = fleetGroups[coordKey];
         const indexInGroup = group.indexOf(fleetId);
 
-        // 30 is our new animation duration in CSS. We space them evenly.
-        const offsetDelay = group.length > 1 ? (30 / group.length) * indexInGroup : 0;
+        // 60 is our new animation duration in CSS. We space them evenly.
+        const offsetDelay = group.length > 1 ? (60 / group.length) * indexInGroup : 0;
 
         // Use custom HTML with an image tag to allow for CSS animation orbiting
         // Inject negative animation-delay so they instantly start at the correctly spaced position on the ring
@@ -617,8 +617,8 @@ function renderData() {
         const icon = L.divIcon({
             className: 'fleet-marker-container',
             html: htmlContent,
-            iconSize: [100, 100], // Define size so Leaflet knows the dimensions
-            iconAnchor: [50, 50] // Pin the exact center [X,Y] of the 100x100 box to the map coordinates
+            iconSize: [150, 150], // Define size so Leaflet knows the dimensions
+            iconAnchor: [75, 75] // Pin the exact center [X,Y] of the 150x150 box to the map coordinates
         });
 
         const marker = L.marker([f.y, f.x], {
