@@ -28,7 +28,7 @@ function updateFleetScale() {
     const scaleFactor = Math.pow(2, currentZoom - minZoomLevel);
     document.documentElement.style.setProperty('--fleet-zoom-scale', scaleFactor);
 }
-map.on('zoom', updateFleetScale);
+map.on('zoomend', updateFleetScale);
 updateFleetScale(); // Call immediately to set initial scale
 
 // Persistent Storage & Multiplayer Sync
