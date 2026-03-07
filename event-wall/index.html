@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Event Graffiti Wall</title>
+
+    <!-- Google Fonts for UI and Graffiti -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fredericka+the+Great&family=Permanent+Marker&family=Rock+Salt&family=Sedgwick+Ave&display=swap"
+        rel="stylesheet">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="wall.css">
+
+    <!-- Supabase and html2canvas Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Main Logic -->
+    <script type="module" src="wall.js"></script>
+</head>
+
+<body>
+
+    <!-- Authentication Modal (Magic Link) -->
+    <div id="auth-modal" class="modal active">
+        <div class="modal-content">
+            <h2>Guest Authentication</h2>
+            <p>Enter your invited email address to receive a magic login link.</p>
+            <form id="auth-form">
+                <input type="email" id="auth-email" placeholder="guest@example.com" required>
+                <button type="submit" id="btn-login">Send Magic Link</button>
+            </form>
+            <div id="auth-message" class="system-message"></div>
+        </div>
+    </div>
+
+    <!-- Compose Message Modal -->
+    <div id="compose-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="compose-title">Leave Your Mark</h2>
+            <textarea id="graffiti-input" maxlength="150" placeholder="Type your message here..."></textarea>
+            <div class="modal-actions">
+                <button id="btn-cancel-message" class="btn-secondary">Cancel</button>
+                <button id="btn-save-message">Spray</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Layout -->
+    <div id="app-wrapper" style="display: none;">
+
+        <!-- The Graffiti Wall (Scrollable if expands) -->
+        <main id="wall-container">
+            <div id="wall-surface">
+                <!-- Graffiti messages get injected here -->
+            </div>
+        </main>
+
+        <!-- Fixed Right Sidebar -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h2>Event Details</h2>
+                <p>Welcome to the private event wall. Leave your mark below!</p>
+            </div>
+
+            <div class="sidebar-actions">
+                <button id="btn-leave-message" class="btn-primary">Leave a Message</button>
+                <button id="btn-edit-message" class="btn-secondary" style="display: none;">Edit My Message</button>
+            </div>
+
+            <div class="rsvp-section">
+                <h3>Will you attend?</h3>
+                <div class="rsvp-buttons">
+                    <button id="btn-rsvp-yes" class="btn-yes">Yes</button>
+                    <button id="btn-rsvp-no" class="btn-no">No</button>
+                </div>
+                <div id="rsvp-status"></div>
+            </div>
+
+            <!-- Admin Tools (Hidden by default, shown if user is admin) -->
+            <div id="admin-section" style="display: none; margin-top: auto;">
+                <hr>
+                <h3>Admin Tools</h3>
+                <button id="btn-export-tiff" class="btn-secondary">Export Wall to TIFF</button>
+            </div>
+
+            <div class="auth-status">
+                <span id="current-user-email"></span>
+                <button id="btn-logout" class="btn-text">Log Out</button>
+            </div>
+        </aside>
+    </div>
+
+</body>
+
+</html>

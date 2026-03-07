@@ -1,0 +1,27 @@
+/* Elgato Interface Styles */
+
+:root {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --accent-color: #00d2ff;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+}
+
+#app-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+h1 {
+    color: var(--accent-color);
+}

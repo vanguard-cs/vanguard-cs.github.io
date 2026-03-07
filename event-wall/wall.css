@@ -1,0 +1,242 @@
+/* Base Styles */
+:root {
+    --sidebar-width: 280px;
+    --bg-dark: #121212;
+    --bg-panel: #1e1e1e;
+    --text-primary: #ffffff;
+    --text-muted: #aaaaaa;
+    --accent: #ff0055;
+    --accent-hover: #cc0044;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    background-color: var(--bg-dark);
+    overflow: hidden;
+    /* App wrapper handles layout */
+}
+
+/* App Layout */
+#app-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* The Wall */
+#wall-container {
+    flex-grow: 1;
+    height: 100%;
+    overflow: auto;
+    /* Allow scrolling if wall expands vertically */
+    position: relative;
+    background-color: #333;
+    /* Fallback */
+    /* Repeated concrete texture */
+    background-image: url('assets/concrete_texture.jpg');
+    background-repeat: repeat;
+    background-size: 512px 512px;
+}
+
+/* The surface where grid positions map to */
+#wall-surface {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    /* Can expand dynamically via JS */
+}
+
+/* Fixed Sidebar */
+#sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    background-color: var(--bg-panel);
+    border-left: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    box-sizing: border-box;
+    z-index: 10;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-header h2 {
+    margin-top: 0;
+    color: var(--accent);
+    font-size: 24px;
+}
+
+.sidebar-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.sidebar-actions,
+.rsvp-section {
+    margin-top: 30px;
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 10px;
+}
+
+.btn-primary,
+.btn-yes {
+    background-color: var(--accent);
+    color: white;
+}
+
+.btn-primary:hover,
+.btn-yes:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn-secondary,
+.btn-no {
+    background-color: #333;
+    color: white;
+}
+
+.btn-secondary:hover,
+.btn-no:hover {
+    background-color: #444;
+}
+
+.btn-text {
+    background: transparent;
+    color: var(--text-muted);
+    padding: 0;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.btn-text:hover {
+    color: white;
+}
+
+/* RSVP specific */
+.rsvp-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+#rsvp-status {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+/* Auth Status footer */
+.auth-status {
+    margin-top: auto;
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+}
+
+#current-user-email {
+    word-break: break-all;
+    margin-bottom: 5px;
+}
+
+/* Modals */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--bg-panel);
+    padding: 30px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: var(--text-primary);
+}
+
+input[type="email"],
+textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    background-color: #121212;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 4px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: none;
+    height: 100px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-actions button {
+    width: auto;
+    padding: 10px 20px;
+    margin-bottom: 0;
+}
+
+.system-message {
+    margin-top: 15px;
+    font-size: 14px;
+    color: var(--accent);
+}
+
+/* Graffiti Tag Base */
+.graffiti-tag {
+    position: absolute;
+    /* Re-centered via JS transform */
+    white-space: normal;
+    word-wrap: break-word;
+    /* Prevents long unbreakable strings */
+    text-align: center;
+    pointer-events: none;
+    /* Let clicks pass through if needed */
+    user-select: none;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    /* Note: Color, Font-Family, Transform, Size injected via JS */
+}
