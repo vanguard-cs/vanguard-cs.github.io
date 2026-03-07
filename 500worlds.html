@@ -24,17 +24,17 @@
             height: calc(100 * var(--fleet-zoom-scale, 1));
             top: 50%;
             left: 50%;
-            /* Offset negative margins to true center the 150px wrapper on the Leaflet LatLng */
-            margin-left: calc(-75px * var(--fleet-zoom-scale, 1));
-            margin-top: calc(-75px * var(--fleet-zoom-scale, 1));
+            /* Offset negative margins to true center the 100px wrapper on the Leaflet LatLng */
+            margin-left: calc(-50px * var(--fleet-zoom-scale, 1));
+            margin-top: calc(-50px * var(--fleet-zoom-scale, 1));
 
             /* Perfectly sync CSS dimension changes with Leaflet's 0.25s native zoom animation */
-            transition: width 0.25s cubic-bezier(0, 0, 0.25, 1), height 0.25s cubic-bezier(0, 0, 0.25, 1), margin-left 0.25s cubic-bezier(0, 0, 0.25, 1), margin-top 0.25s cubic-bezier(0, 0, 0.25, 1);
+            transition: width 0.25s cubic-bezier(0, 0, 0.25, 1), height 0.25s cubic-bezier(0, 0, 0.25, 1);
 
             animation: orbit 30s linear infinite;
-            pointer-events: none;
             /* Let map clicks pass through the huge invisible orbit */
             border-radius: 50%;
+            transform-origin: center center;
         }
 
         /* The token itself sits inside the wrapper and counter-rotates to stay upright */
@@ -48,12 +48,15 @@
             top: 0;
             left: 50%;
             margin-left: calc(-30px * var(--fleet-zoom-scale, 1));
-            margin-top: calc(-30px * var(--fleet-zoom-scale, 1));
+            /* Base width 60px / 2 */
+            margin-top: calc(-15px * var(--fleet-zoom-scale, 1));
+            /* Base height 30px / 2 */
 
             filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
+            transform-origin: center center;
 
             /* Perfectly sync CSS dimension changes with Leaflet's 0.25s native zoom animation */
-            transition: filter 0.3s ease, width 0.25s cubic-bezier(0, 0, 0.25, 1), height 0.25s cubic-bezier(0, 0, 0.25, 1), margin-left 0.25s cubic-bezier(0, 0, 0.25, 1), margin-top 0.25s cubic-bezier(0, 0, 0.25, 1);
+            transition: filter 0.3s ease, width 0.25s cubic-bezier(0, 0, 0.25, 1), height 0.25s cubic-bezier(0, 0, 0.25, 1);
 
             /* Counter-rotate so the tip of the arrow always points North */
             animation: counter-orbit 30s linear infinite;
@@ -67,7 +70,8 @@
 
         .fleet-token.interactive:hover {
             filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8)) brightness(1.2);
-            transform: scale(1.1);
+            transform: scale(1.05);
+            /* Slight scale up without breaking absolute anchor */
         }
 
         /* Fast orbit applied to the wrapper, glowing applied to the token inside */

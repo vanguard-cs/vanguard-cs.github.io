@@ -617,8 +617,8 @@ function renderData() {
         const icon = L.divIcon({
             className: 'fleet-marker-container',
             html: htmlContent,
-            iconSize: [0, 0], // True center point size
-            iconAnchor: [0, 0] // True center point
+            iconSize: [100, 100], // Define size so Leaflet knows the dimensions
+            iconAnchor: [50, 50] // Pin the exact center [X,Y] of the 100x100 box to the map coordinates
         });
 
         const marker = L.marker([f.y, f.x], {
