@@ -20,8 +20,8 @@
         .fleet-orbit-wrapper {
             position: absolute;
             /* 200px base radius * current zoom scale */
-            width: calc(150px * var(--fleet-zoom-scale, 1));
-            height: calc(150px * var(--fleet-zoom-scale, 1));
+            width: calc(100 * var(--fleet-zoom-scale, 1));
+            height: calc(100 * var(--fleet-zoom-scale, 1));
             top: 50%;
             left: 50%;
             /* Offset negative margins to true center the 150px wrapper on the Leaflet LatLng */
@@ -72,11 +72,11 @@
 
         /* Fast orbit applied to the wrapper, glowing applied to the token inside */
         .fleet-orbit-wrapper.selected {
-            animation: orbit 5s linear infinite;
+            animation-duration: 5s;
         }
 
         .fleet-orbit-wrapper.selected .fleet-token {
-            animation: counter-orbit 5s linear infinite;
+            animation-duration: 5s;
             filter: drop-shadow(0 0 15px var(--accent-cyan)) brightness(1.5);
         }
 

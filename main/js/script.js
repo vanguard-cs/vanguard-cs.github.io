@@ -605,9 +605,10 @@ function renderData() {
 
         // Use custom HTML with an image tag to allow for CSS animation orbiting
         // Inject negative animation-delay so they instantly start at the correctly spaced position on the ring
+        const isSelected = activeMovingFleetId === fleetId;
         const htmlContent = `
-            <div class="fleet-orbit-wrapper ${activeMovingFleetId === fleetId ? 'selected' : ''}" style="animation-delay: -${offsetDelay}s">
-                <div class="fleet-token ${isOwned ? 'interactive' : ''}" style="animation-delay: -${offsetDelay}s">
+            <div class="fleet-orbit-wrapper ${isSelected ? 'selected' : ''}" style="animation-delay: -${offsetDelay}s; ${isSelected ? 'animation-duration: 5s;' : ''}">
+                <div class="fleet-token ${isOwned ? 'interactive' : ''}" style="animation-delay: -${offsetDelay}s; ${isSelected ? 'animation-duration: 5s;' : ''}">
                     <img src="main/assets/mapsicons/Fleet Icons/${f.faction}_fleet.png" style="width: 100%; height: 100%;">
                 </div>
             </div>
