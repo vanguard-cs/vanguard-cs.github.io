@@ -33,8 +33,12 @@
 
             animation: orbit 30s linear infinite;
             /* Let map clicks pass through the huge invisible orbit */
-            border-radius: 50%;
-            transform-origin: center center;
+            pointer-events: none;
+
+            /* Flexbox makes the tokens pin to the orbit edge naturally */
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
         }
 
         /* The token itself sits inside the wrapper and counter-rotates to stay upright */
@@ -42,15 +46,6 @@
             /* 60px base token size * current zoom scale */
             width: calc(60px * var(--fleet-zoom-scale, 1));
             height: calc(30px * var(--fleet-zoom-scale, 1));
-
-            /* Pin the token exactly to the top edge (12 o'clock) of the wrapper circle */
-            position: absolute;
-            top: 0;
-            left: 50%;
-            margin-left: calc(-30px * var(--fleet-zoom-scale, 1));
-            /* Base width 60px / 2 */
-            margin-top: calc(-15px * var(--fleet-zoom-scale, 1));
-            /* Base height 30px / 2 */
 
             filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
             transform-origin: center center;
