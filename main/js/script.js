@@ -22,12 +22,14 @@ map.setMinZoom(minZoomLevel);
 map.setView([imgHeight / 2, imgWidth / 2], minZoomLevel);
 
 // Dynamically scale fleets 1:1 with map zoom
-function updateFleetScale() {
-    const currentZoom = map.getZoom();
-    // Leaflet map scales by a power of 2 for every 1.0 zoom level step
-    const scaleFactor = Math.pow(2, currentZoom - minZoomLevel);
+function updateFleetScale(e) {
+    // If e.zoom is provided (from zoomanim), use it as the target zoom, otherwise fallback to current map zoom
+    const targetZoom = (e && e.zoom !== undefined) ? e.zoom : map.getZoom();
+    const scaleFactor = Math.pow(2, targetZoom - minZoomLevel);
     document.documentElement.style.setProperty('--fleet-zoom-scale', scaleFactor);
 }
+// Listen to 'zoomanim' so the scale variable updates at the exact START of the zoom animation
+map.on('zoomanim', updateFleetScale);
 map.on('zoomend', updateFleetScale);
 updateFleetScale(); // Call immediately to set initial scale
 
