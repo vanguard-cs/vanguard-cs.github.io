@@ -605,16 +605,33 @@ function renderData() {
         listEl.appendChild(listItem);
     });
 
+    // Group fleets by coordinate to prevent visual stacking
+    const fleetGroups = {};
+    Object.keys(fleets).forEach(fleetId => {
+        const f = fleets[fleetId];
+        const coordKey = `${f.x}_${f.y}`;
+        if (!fleetGroups[coordKey]) fleetGroups[coordKey] = [];
+        fleetGroups[coordKey].push(fleetId);
+    });
+
     // Render Fleets
     Object.keys(fleets).forEach(fleetId => {
         const f = fleets[fleetId];
-
-        // Use custom HTML with an image tag to allow for CSS animation orbiting
         const isOwned = currentFaction === 'global' || currentFaction === f.faction;
 
+        // Calculate phase-shift offset for overlapping fleets
+        const coordKey = `${f.x}_${f.y}`;
+        const group = fleetGroups[coordKey];
+        const indexInGroup = group.indexOf(fleetId);
+
+        // 15 is our animation duration in CSS. We space them evenly based on how many share the spot.
+        const offsetDelay = group.length > 1 ? (15 / group.length) * indexInGroup : 0;
+
+        // Use custom HTML with an image tag to allow for CSS animation orbiting
+        // Inject negative animation-delay so they instantly start at the correctly spaced position on the ring
         const htmlContent = `
-            <div class="fleet-orbit-wrapper ${activeMovingFleetId === fleetId ? 'selected' : ''}">
-                <div class="fleet-token ${isOwned ? 'interactive' : ''}">
+            <div class="fleet-orbit-wrapper ${activeMovingFleetId === fleetId ? 'selected' : ''}" style="animation-delay: -${offsetDelay}s">
+                <div class="fleet-token ${isOwned ? 'interactive' : ''}" style="animation-delay: -${offsetDelay}s">
                     <img src="main/assets/mapsicons/Fleet Icons/${f.faction}_fleet.png" style="width: 100%; height: 100%;">
                 </div>
             </div>
