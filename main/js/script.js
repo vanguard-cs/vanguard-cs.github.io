@@ -753,3 +753,18 @@ btnExport.addEventListener('click', async () => {
         btnExport.style.pointerEvents = 'auto';
     }
 });
+
+const btnForceSync = document.getElementById('btn-force-sync');
+if (btnForceSync) {
+    btnForceSync.addEventListener('click', async () => {
+        if (!currentCrusadeId) return;
+        const oldHtml = btnForceSync.innerHTML;
+        btnForceSync.innerHTML = "SYNCING...";
+        btnForceSync.style.pointerEvents = 'none';
+
+        await refreshFromNetwork();
+
+        btnForceSync.innerHTML = oldHtml;
+        btnForceSync.style.pointerEvents = 'auto';
+    });
+}
