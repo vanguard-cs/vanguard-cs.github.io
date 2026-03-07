@@ -657,6 +657,19 @@ function renderData() {
                     // Deselect
                     activeMovingFleetId = null;
                     document.getElementById('map').style.cursor = 'grab';
+                } else if (activeMovingFleetId) {
+                    // Group: move the active fleet to this fleet's identical coordinate
+                    const targetLatLng = marker.getLatLng();
+                    const idToMove = activeMovingFleetId;
+                    activeMovingFleetId = null;
+                    document.getElementById('map').style.cursor = 'grab';
+
+                    mutateNetworkData((serverData) => {
+                        if (serverData.fleets && serverData.fleets[idToMove]) {
+                            serverData.fleets[idToMove].x = targetLatLng.lng;
+                            serverData.fleets[idToMove].y = targetLatLng.lat;
+                        }
+                    });
                 } else {
                     // Select
                     activeMovingFleetId = fleetId;

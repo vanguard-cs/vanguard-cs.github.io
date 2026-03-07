@@ -24,9 +24,9 @@
             height: calc(150px * var(--fleet-zoom-scale, 1));
             top: 50%;
             left: 50%;
-            /* Offset negative margins to true center the wrapper on the Leaflet LatLng */
-            margin-left: calc(-100px * var(--fleet-zoom-scale, 1));
-            margin-top: calc(-100px * var(--fleet-zoom-scale, 1));
+            /* Offset negative margins to true center the 150px wrapper on the Leaflet LatLng */
+            margin-left: calc(-75px * var(--fleet-zoom-scale, 1));
+            margin-top: calc(-75px * var(--fleet-zoom-scale, 1));
 
             /* Perfectly sync CSS dimension changes with Leaflet's 0.25s native zoom animation */
             transition: width 0.25s cubic-bezier(0, 0, 0.25, 1), height 0.25s cubic-bezier(0, 0, 0.25, 1), margin-left 0.25s cubic-bezier(0, 0, 0.25, 1), margin-top 0.25s cubic-bezier(0, 0, 0.25, 1);
@@ -49,7 +49,6 @@
 
             /* Perfectly sync CSS dimension changes with Leaflet's 0.25s native zoom animation */
             transition: filter 0.3s ease, width 0.25s cubic-bezier(0, 0, 0.25, 1), height 0.25s cubic-bezier(0, 0, 0.25, 1);
-            position: absolute;
 
             /* Counter-rotate so the tip of the arrow always points North */
             animation: counter-orbit 15s linear infinite;
