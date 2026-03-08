@@ -297,7 +297,10 @@ function initDesignMode() {
             })
             .eq('id', msgId);
 
-        if (error) console.error("Failed to save position:", error);
+        if (error) {
+            console.error("Failed to save position:", error);
+            alert("Design Mode Error: Failed to save position. Check if you ran the Supabase SQL migration for the new columns!");
+        }
 
         draggedElement.style.zIndex = '';
         draggedElement = null;
@@ -327,7 +330,7 @@ function initDesignMode() {
         tag.style.transform = `${baseTransform}scale(${currentScale})`;
 
         // Persist
-        await supabase
+        const { error } = await supabase
             .from('messages')
             .update({
                 manual_scale: currentScale,
@@ -337,6 +340,11 @@ function initDesignMode() {
                 manual_y: parseFloat(tag.style.top)
             })
             .eq('id', msgId);
+
+        if (error) {
+            console.error("Failed to save scale:", error);
+            alert("Design Mode Error: Failed to save scale. Have you run the SQL migration?");
+        }
     }, { passive: false });
 }
 
