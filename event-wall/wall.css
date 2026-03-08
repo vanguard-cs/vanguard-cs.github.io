@@ -5,8 +5,9 @@
     --bg-panel: #1e1e1e;
     --text-primary: #ffffff;
     --text-muted: #aaaaaa;
-    --accent: #ff0055;
-    --accent-hover: #cc0044;
+    --accent: #ff00ff;
+    /* Acid Hot Pink */
+    --accent-hover: #cc00cc;
 }
 
 body,
