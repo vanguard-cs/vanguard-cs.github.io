@@ -45,6 +45,16 @@
         <div class="modal-content">
             <h2 id="compose-title">Leave Your Mark</h2>
             <textarea id="graffiti-input" maxlength="150" placeholder="Type your message here..."></textarea>
+            <div class="color-palette" id="color-palette">
+                <!-- Swatches -->
+                <div class="swatch active" data-color="#ffffff" style="background: #ffffff;"></div>
+                <div class="swatch" data-color="#ff00ff" style="background: #ff00ff;"></div>
+                <div class="swatch" data-color="#00e5ff" style="background: #00e5ff;"></div>
+                <div class="swatch" data-color="#ffd500" style="background: #ffd500;"></div>
+                <div class="swatch" data-color="#00ff88" style="background: #00ff88;"></div>
+                <div class="swatch" data-color="#ff3300" style="background: #ff3300;"></div>
+                <div class="swatch" data-color="#b800ff" style="background: #b800ff;"></div>
+            </div>
             <div class="modal-actions">
                 <button id="btn-cancel-message" class="btn-secondary">Cancel</button>
                 <button id="btn-save-message">Spray</button>
@@ -102,7 +112,9 @@
             <div id="admin-section"
                 style="display: none; margin-top: 30px; padding-top: 20px; border-top: 1px solid #444;">
                 <h3 style="color: var(--accent); margin-top: 0;">Admin Tools</h3>
-                <button id="btn-export-tiff" class="btn-secondary">Export Canvas (TIFF)</button>
+                <button id="btn-toggle-design" class="btn-secondary" style="margin-bottom: 10px;">Enter Design
+                    Mode</button>
+                <button id="btn-export-tiff" class="btn-primary">Export Canvas (TIFF)</button>
             </div>
 
             <!-- Auth Status footer -->

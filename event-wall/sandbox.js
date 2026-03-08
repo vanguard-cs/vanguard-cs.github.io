@@ -33,7 +33,6 @@ function initSandbox() {
     document.getElementById('btn-clear').addEventListener('click', () => {
         messagesCache = [];
         wallSurface.innerHTML = '';
-        currentGrid.initializeGrid(); // Reset spatial map
         updateStats();
     });
 }
@@ -41,24 +40,21 @@ function initSandbox() {
 function injectMessages(count, explicitText = null) {
     for (let i = 0; i < count; i++) {
         // Find an empty spot
-        const pos = currentGrid.findEmptySpot();
+        const pos = currentGrid.findAvailableSlot(messagesCache);
         if (!pos) {
             console.warn("Grid is completely full!");
             alert("Canvas full! Please clear the sandbox.");
             break; // Stop loop if full
         }
 
-        // Claim the space
-        currentGrid.markCellOccupied(pos.x, pos.y);
-
         // Calculate raw pixel coords mapping back
-        const pixelX = pos.x * currentGrid.cellWidth;
-        const pixelY = pos.y * currentGrid.cellHeight;
+        const pixelX = pos.x;
+        const pixelY = pos.y;
 
         const text = explicitText || FAKE_PHRASES[Math.floor(Math.random() * FAKE_PHRASES.length)];
 
-        // Generate full styles
-        const styles = generateRandomStyles();
+        // Generate full styles with correct length-based scaling
+        const styles = generateRandomStyles(text.length);
 
         // Create Mock Supabase Message Object
         const mockMsg = {
@@ -75,6 +71,9 @@ function injectMessages(count, explicitText = null) {
         // Render it
         renderMessage(wallSurface, mockMsg, currentGrid, true); // True to show Admin Delete button for visual test
     }
+
+    // Expand background
+    wallSurface.style.height = `${currentGrid.getTotalHeight()}px`;
 
     updateStats();
 }

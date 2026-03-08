@@ -106,7 +106,10 @@ async function loadWall() {
         }
     }
 
-    // 4. Update UI Buttons
+    // 4. Ensure the background container expands to fit the grid
+    wallSurface.style.height = `${currentGrid.getTotalHeight()}px`;
+
+    // 5. Update UI Buttons
     if (myMessageId) {
         btnLeaveMsg.style.display = 'none';
         btnEditMsg.style.display = 'block';
@@ -117,12 +120,18 @@ async function loadWall() {
 }
 
 // Modal Form Submission Callback
-async function handleMessageSave(textContent, existingMessageObj) {
+async function handleMessageSave(textContent, existingMessageObj, chosenColor = null) {
     if (existingMessageObj) {
         // UPDATE Existing
+        const updateData = { content: textContent };
+        if (chosenColor) {
+            updateData.color_hex = chosenColor.hex;
+            updateData.color_rgb = chosenColor.rgb;
+        }
+
         const { error } = await supabase
             .from('messages')
-            .update({ content: textContent })
+            .update(updateData)
             .eq('id', existingMessageObj.id);
 
         if (error) {
@@ -136,6 +145,10 @@ async function handleMessageSave(textContent, existingMessageObj) {
         const slot = currentGrid.findAvailableSlot(messagesCache);
         const styles = generateRandomStyles(textContent.length);
 
+        // Use chosen color if provided, otherwise use random
+        const finalHex = chosenColor ? chosenColor.hex : styles.color_hex;
+        const finalRgb = chosenColor ? chosenColor.rgb : styles.color_rgb;
+
         const { error } = await supabase
             .from('messages')
             .insert({
@@ -144,8 +157,8 @@ async function handleMessageSave(textContent, existingMessageObj) {
                 grid_y: slot.y,
                 user_id: currentUser.id,
                 font: styles.font,
-                color_hex: styles.color_hex,
-                color_rgb: styles.color_rgb,
+                color_hex: finalHex,
+                color_rgb: finalRgb,
                 rotation: styles.rotation,
                 font_size: styles.font_size
             });
@@ -215,5 +228,107 @@ document.getElementById('btn-rsvp-no').addEventListener('click', () => submitRsv
 
 document.getElementById('btn-export-tiff').addEventListener('click', () => exportWall());
 
+// --- Admin Design Mode Logic ---
+let isDesignMode = false;
+let draggedElement = null;
+let dragOffset = { x: 0, y: 0 };
+
+function initDesignMode() {
+    const btnToggle = document.getElementById('btn-toggle-design');
+    if (!btnToggle) return;
+
+    btnToggle.addEventListener('click', () => {
+        isDesignMode = !isDesignMode;
+        document.body.classList.toggle('design-mode-active', isDesignMode);
+        btnToggle.innerText = isDesignMode ? "Exit Design Mode" : "Enter Design Mode";
+        btnToggle.classList.toggle('btn-yes', isDesignMode);
+
+        if (!isDesignMode) {
+            // Refresh to ensure all positions are synced
+            loadWall();
+        }
+    });
+
+    // Handle Dragging
+    wallSurface.addEventListener('mousedown', (e) => {
+        if (!isDesignMode) return;
+        const tag = e.target.closest('.graffiti-tag');
+        if (!tag) return;
+
+        draggedElement = tag;
+        const rect = tag.getBoundingClientRect();
+        const surfaceRect = wallSurface.getBoundingClientRect();
+
+        // Calculate offset from click to center of element
+        dragOffset.x = e.clientX - rect.left - rect.width / 2;
+        dragOffset.y = e.clientY - rect.top - rect.height / 2;
+
+        tag.style.transition = 'none';
+        tag.style.zIndex = 1000;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!draggedElement || !isDesignMode) return;
+
+        const surfaceRect = wallSurface.getBoundingClientRect();
+        // Use offset to keep the relative grab point
+        const x = e.clientX - surfaceRect.left - dragOffset.x;
+        const y = e.clientY - surfaceRect.top + window.scrollY - dragOffset.y;
+
+        draggedElement.style.left = `${x}px`;
+        draggedElement.style.top = `${y}px`;
+    });
+
+    window.addEventListener('mouseup', async (e) => {
+        if (!draggedElement || !isDesignMode) return;
+
+        const msgId = draggedElement.getAttribute('data-id');
+        const finalX = parseFloat(draggedElement.style.left);
+        const finalY = parseFloat(draggedElement.style.top);
+
+        // Persist to Supabase
+        const { error } = await supabase
+            .from('messages')
+            .update({
+                is_manual: true,
+                manual_x: finalX,
+                manual_y: finalY
+            })
+            .eq('id', msgId);
+
+        if (error) console.error("Failed to save position:", error);
+
+        draggedElement.style.zIndex = '';
+        draggedElement = null;
+    });
+
+    // Handle Resizing via Mouse Wheel (Shift + Wheel)
+    wallSurface.addEventListener('wheel', async (e) => {
+        if (!isDesignMode || !e.shiftKey) return;
+        const tag = e.target.closest('.graffiti-tag');
+        if (!tag) return;
+
+        e.preventDefault();
+        const msgId = tag.getAttribute('data-id');
+        const msg = messagesCache.find(m => m.id === msgId);
+        if (!msg) return;
+
+        let currentScale = msg.manual_scale || 1.0;
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        currentScale = Math.max(0.5, Math.min(3.0, currentScale + delta));
+
+        // Update UI immediately
+        msg.manual_scale = currentScale;
+        tag.style.transform = tag.style.transform.replace(/scale\([^)]*\)/, `scale(${currentScale})`);
+
+        // Persist
+        await supabase
+            .from('messages')
+            .update({ manual_scale: currentScale })
+            .eq('id', msgId);
+    }, { passive: false });
+}
+
 // Boot
 initAuth();
+initDesignMode();

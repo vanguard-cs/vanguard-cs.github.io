@@ -17,6 +17,10 @@ export class GraffitiGrid {
         this.cellHeight = this.minCellHeight; // Keep fixed height for readability, or stretch too
     }
 
+    getTotalHeight() {
+        return (this.rows * this.cellHeight) + 100; // Add buffer for bottom-most messages
+    }
+
     /**
      * Efficiently finds a random available slot using a Set for O(1) lookups
      */
@@ -56,8 +60,9 @@ export class GraffitiGrid {
         const paddingY = this.cellHeight * 0.1;
 
         // Random offset within the safe zone of the cell
-        const maxOffsetX = (this.cellWidth - paddingX * 2) * 0.5;
-        const maxOffsetY = (this.cellHeight - paddingY * 2) * 0.5;
+        // Reduced to 20% to prevent center-to-center overlap
+        const maxOffsetX = (this.cellWidth - paddingX * 2) * 0.2;
+        const maxOffsetY = (this.cellHeight - paddingY * 2) * 0.2;
 
         const offsetX = (Math.random() * maxOffsetX * 2) - maxOffsetX;
         const offsetY = (Math.random() * maxOffsetY * 2) - maxOffsetY;
@@ -116,8 +121,18 @@ export function renderMessage(container, message, grid, isAdmin = false) {
     // Apply strict bounds to prevent massive words from breaking the layout
     el.style.maxWidth = `${grid.cellWidth * 0.9}px`;
     el.style.wordWrap = "break-word";
+    el.setAttribute('data-id', message.id);
 
-    const { left, top } = grid.calculateStyles(message.grid_x, message.grid_y);
+    // Calculate Position: Use manual override if present, otherwise use grid slot
+    let left, top;
+    if (message.is_manual && message.manual_x !== null && message.manual_y !== null) {
+        left = message.manual_x;
+        top = message.manual_y;
+    } else {
+        const coords = grid.calculateStyles(message.grid_x, message.grid_y);
+        left = coords.left;
+        top = coords.top;
+    }
 
     // Apply persistent database styles or default fallbacks
     const rot = message.rotation !== undefined ? message.rotation : (Math.random() * 24 - 12);
@@ -125,7 +140,10 @@ export function renderMessage(container, message, grid, isAdmin = false) {
     el.style.position = "absolute";
     el.style.left = `${left}px`;
     el.style.top = `${top}px`;
-    el.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
+
+    // Apply manual scale if present
+    const scale = message.manual_scale || 1.0;
+    el.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(${scale})`;
 
     el.style.fontFamily = message.font || "Permanent Marker";
     const hex = message.color_hex || "#ffffff";
@@ -140,7 +158,9 @@ export function renderMessage(container, message, grid, isAdmin = false) {
         0px 5px 2px rgba(${rgb}, 0.2)
     `;
 
-    el.style.fontSize = `${message.font_size || 24}px`;
+    // Font size baseline
+    const baseSize = message.font_size || 24;
+    el.style.fontSize = `${baseSize}px`;
 
     container.appendChild(el);
 }
