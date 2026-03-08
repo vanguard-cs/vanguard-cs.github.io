@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Wall Sandbox 90s Edition</title>
+    <!-- Use the existing CSS for an authentic test -->
+    <link rel="stylesheet" href="wall.css">
+
+    <style>
+        /* Sandbox specific overrides */
+        #app-wrapper {
+            display: flex;
+            /* Force display since we bypass the auth flow */
+        }
+
+        #sidebar {
+            width: 350px;
+            /* Slightly wider for sandbox controls */
+        }
+
+        .sandbox-controls {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #444;
+        }
+
+        .stat-box {
+            background: #111;
+            padding: 10px;
+            border: 1px solid var(--accent);
+            margin-bottom: 15px;
+            font-family: monospace;
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Main Application Layout -->
+    <div id="app-wrapper">
+
+        <!-- The Graffiti Wall (Scrollable if expands) -->
+        <main id="wall-container">
+            <div id="wall-surface">
+                <!-- Sandbox graffiti messages injected here -->
+            </div>
+        </main>
+
+        <!-- Fixed Right Sidebar -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h2>SANDBOX<br>LOAD TEST</h2>
+                <p>Isolated environment for testing grid collision algorithms and CSS edge cases.</p>
+            </div>
+
+            <div class="sandbox-controls">
+                <div class="stat-box">
+                    Messages: <span id="stat-count">0</span><br>
+                    Collisions: 0 (Grid Forced)
+                </div>
+
+                <button id="btn-add-1" class="btn-primary">Add 1 Message</button>
+                <button id="btn-add-10" class="btn-primary">Add 10 Messages</button>
+                <button id="btn-add-30" class="btn-secondary">Add 30 Messages (Stress)</button>
+                <button id="btn-add-huge" class="btn-secondary" style="border-color: yellow; color: yellow;">Add Huge
+                    Word</button>
+
+                <div style="margin-top: 30px;">
+                    <button id="btn-clear" class="btn-no">Clear Canvas</button>
+                </div>
+            </div>
+
+            <div style="margin-top: auto; font-size: 11px; color: #666;">
+                Note: This sandbox bypasses Supabase entirely. Data is volatile.
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Inject sandbox logic -->
+    <script type="module" src="sandbox.js"></script>
+
+</body>
+
+</html>

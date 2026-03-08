@@ -10,6 +10,13 @@ let currentGrid = null;
 let myMessageId = null; // Track if the current user already has a message
 let messagesCache = [];
 
+// Helper to get the correct absolute redirect URL for Magic Links
+function getRedirectUrl() {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const root = isLocal ? 'http://localhost:8080' : 'https://vanguard-cs.github.io';
+    return `${root}/event-wall/`;
+}
+
 // DOM Elements
 const authModal = document.getElementById('auth-modal');
 const appWrapper = document.getElementById('app-wrapper');
@@ -47,7 +54,7 @@ async function initAuth() {
 
             const { error } = await supabase.auth.signInWithOtp({
                 email: email,
-                options: { emailRedirectTo: 'https://vanguard-cs.github.io/event-wall/' }
+                options: { emailRedirectTo: getRedirectUrl() }
             });
 
             if (error) {
