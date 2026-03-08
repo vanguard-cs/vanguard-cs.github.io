@@ -96,10 +96,22 @@ export function generateRandomStyles(contentLength) {
     };
 }
 
-export function renderMessage(container, message, grid) {
+export function renderMessage(container, message, grid, isAdmin = false) {
     const el = document.createElement("div");
     el.className = "graffiti-tag";
-    el.innerText = message.content;
+
+    // Inject the text content
+    const textSpan = document.createElement("span");
+    textSpan.innerText = message.content;
+    el.appendChild(textSpan);
+
+    if (isAdmin) {
+        const delBtn = document.createElement("button");
+        delBtn.className = "btn-admin-delete";
+        delBtn.innerHTML = "&times;";
+        delBtn.setAttribute('data-id', message.id);
+        el.appendChild(delBtn);
+    }
 
     // Apply strict bounds to prevent massive words from breaking the layout
     el.style.maxWidth = `${grid.cellWidth * 0.9}px`;

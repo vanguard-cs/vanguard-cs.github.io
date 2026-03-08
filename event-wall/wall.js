@@ -27,10 +27,10 @@ async function initAuth() {
         authModal.classList.remove('active');
         appWrapper.style.display = 'flex';
 
-        // Check Admin specifically if you want the export button visible
-        // Here we assume admins have a specific email or role, or we can just try to see if they are the host.
-        // For simplicity, we can show it to a hardcoded admin email here, or always hide it for guests.
-        // if (currentUser.email === 'admin@example.com') document.getElementById('admin-section').style.display = 'block';
+        // Check Admin specifically to show the export and delete tools
+        if (currentUser.email === 'vanguard.cs@proton.me') {
+            document.getElementById('admin-section').style.display = 'block';
+        }
 
         loadWall();
     } else {
@@ -90,7 +90,8 @@ async function loadWall() {
     myMessageId = null;
 
     for (let msg of messagesCache) {
-        renderMessage(wallSurface, msg, currentGrid);
+        const isAdmin = currentUser.email === 'vanguard.cs@proton.me';
+        renderMessage(wallSurface, msg, currentGrid, isAdmin);
 
         // Identify if the active user owns this message
         if (msg.user_id === currentUser.id) {
@@ -154,6 +155,21 @@ async function handleMessageSave(textContent, existingMessageObj) {
 const modalController = initMessageModal(handleMessageSave);
 
 btnLeaveMsg.addEventListener('click', () => modalController.openModal(null));
+
+// Global listener for Admin Delete Buttons
+document.addEventListener('click', async (e) => {
+    if (e.target && e.target.classList.contains('btn-admin-delete')) {
+        const msgId = e.target.getAttribute('data-id');
+        if (confirm("Admin: Permanently delete this message?")) {
+            const { error } = await supabase.from('messages').delete().eq('id', msgId);
+            if (error) {
+                alert("Failed to delete: " + error.message);
+            } else {
+                loadWall();
+            }
+        }
+    }
+});
 
 btnEditMsg.addEventListener('click', () => {
     // Find the user's specific message object

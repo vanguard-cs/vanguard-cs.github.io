@@ -281,8 +281,35 @@ textarea {
     word-wrap: break-word;
     /* Prevents long unbreakable strings */
     text-align: center;
-    pointer-events: none;
-    /* Let clicks pass through if needed */
+    pointer-events: auto;
+    /* Let clicks child buttons receive events */
     user-select: none;
     /* Note: Glow shadows, Color, Font-Family, Transform, Size injected via JS */
+}
+
+/* Admin Delete Button on Canvas */
+.btn-admin-delete {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    background: #ff0055;
+    color: white;
+    border: 2px solid #111;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.2;
+    transition: opacity 0.2s;
+    font-family: var(--font-ui);
+    z-index: 100;
+}
+
+.graffiti-tag:hover .btn-admin-delete {
+    opacity: 1;
 }

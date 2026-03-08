@@ -7,6 +7,10 @@ export async function exportWall() {
     // Optional: Hide UI elements you don't want in the export if they lived inside wall-container
 
     try {
+        // Hide admin delete buttons before snapshot
+        const delBtns = document.querySelectorAll('.btn-admin-delete');
+        delBtns.forEach(btn => btn.style.display = 'none');
+
         // html2canvas is globally available via CDN in index.html
         const canvas = await html2canvas(wallContainer, {
             useCORS: true,
@@ -15,18 +19,30 @@ export async function exportWall() {
             scale: 2 // High resolution for print
         });
 
-        // Convert the canvas data to a downloadable image
-        // Browsers natively support PNG and JPEG. TIFF requires heavier external libs (like UTIF.js).
-        // For static simplicity with high quality, we export as a lossless high-res PNG
-        const imageUri = canvas.toDataURL("image/png");
+        // Restore delete buttons
+        delBtns.forEach(btn => btn.style.display = 'flex');
 
-        // Create a temporary lin to download
+        // Extract raw pixel data
+        const ctx = canvas.getContext('2d');
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // Encode raw pixels to TIFF using UTIF.js
+        const tiffBuffer = UTIF.encodeImage(imgData.data.buffer, canvas.width, canvas.height);
+
+        // Convert the returned ArrayBuffer into a Blob for downloading
+        const blob = new Blob([tiffBuffer], { type: "image/tiff" });
+        const objUrl = URL.createObjectURL(blob);
+
+        // Create a temporary link to download
         const a = document.createElement("a");
-        a.href = imageUri;
-        a.download = `Event_Wall_Export_${new Date().toISOString().split('T')[0]}.png`;
+        a.href = objUrl;
+        a.download = `Event_Wall_Export_${new Date().toISOString().split('T')[0]}.tiff`;
         document.body.appendChild(a);
         a.click();
+
+        // Cleanup
         document.body.removeChild(a);
+        URL.revokeObjectURL(objUrl);
 
         alert("Wall successfully exported!");
     } catch (error) {

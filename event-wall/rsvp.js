@@ -23,14 +23,8 @@ export async function submitRsvp(status) {
         }
 
         // Trigger the Edge Function to send email via Resend
-        // Manually fetch the session token to bypass auto-injection bugs
-        const { data: { session } } = await supabase.auth.getSession();
-
         await supabase.functions.invoke('send-rsvp-email', {
-            body: { email: email, status: status },
-            headers: {
-                authorization: `Bearer ${session.access_token}`
-            }
+            body: { email: email, status: status }
         });
 
         const rsvpStatusLbl = document.getElementById("rsvp-status");
