@@ -1,5 +1,5 @@
 import supabase from './supabaseClient.js';
-import { GraffitiGrid, renderMessage } from './gridAlgorithm.js';
+import { GraffitiGrid, renderMessage, generateRandomStyles } from './gridAlgorithm.js';
 import { initMessageModal } from './messageModal.js';
 import { submitRsvp } from './rsvp.js';
 import { exportWall } from './export.js';
@@ -45,7 +45,10 @@ async function initAuth() {
             const msgEl = document.getElementById('auth-message');
             msgEl.innerText = "Sending magic link...";
 
-            const { error } = await supabase.auth.signInWithOtp({ email: email });
+            const { error } = await supabase.auth.signInWithOtp({
+                email: email,
+                options: { emailRedirectTo: window.location.href }
+            });
 
             if (error) {
                 msgEl.innerText = "Error: " + error.message;
@@ -123,6 +126,7 @@ async function handleMessageSave(textContent, existingMessageObj) {
         // INSERT New
         // First, find an empty slot in the grid algorithm
         const slot = currentGrid.findAvailableSlot(messagesCache);
+        const styles = generateRandomStyles(textContent.length);
 
         const { error } = await supabase
             .from('messages')
@@ -130,7 +134,12 @@ async function handleMessageSave(textContent, existingMessageObj) {
                 content: textContent,
                 grid_x: slot.x,
                 grid_y: slot.y,
-                user_id: currentUser.id
+                user_id: currentUser.id,
+                font: styles.font,
+                color_hex: styles.color_hex,
+                color_rgb: styles.color_rgb,
+                rotation: styles.rotation,
+                font_size: styles.font_size
             });
 
         if (error) {
@@ -151,6 +160,32 @@ btnEditMsg.addEventListener('click', () => {
     const myMsg = messagesCache.find(m => m.id === myMessageId);
     if (myMsg) modalController.openModal(myMsg);
 });
+
+// Event Details Markdown Modal
+const btnDetails = document.getElementById('btn-event-details');
+const modalDetails = document.getElementById('details-modal');
+const btnCloseDetails = document.getElementById('btn-close-details');
+const markdownContainer = document.getElementById('markdown-container');
+
+btnDetails.addEventListener('click', async () => {
+    modalDetails.classList.add('active');
+    try {
+        const response = await fetch('details.md');
+        if (!response.ok) throw new Error("Could not load details.md");
+        const markdownText = await response.text();
+
+        // marked comes from the CDN script in index.html
+        markdownContainer.innerHTML = marked.parse(markdownText);
+    } catch (error) {
+        markdownContainer.innerHTML = "<p>Error loading event details.</p>";
+        console.error(error);
+    }
+});
+
+btnCloseDetails.addEventListener('click', () => {
+    modalDetails.classList.remove('active');
+});
+
 
 document.getElementById('btn-rsvp-yes').addEventListener('click', () => submitRsvp('yes'));
 document.getElementById('btn-rsvp-no').addEventListener('click', () => submitRsvp('no'));

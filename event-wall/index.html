@@ -9,15 +9,16 @@
 
     <!-- Google Fonts for UI and Graffiti -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fredericka+the+Great&family=Permanent+Marker&family=Rock+Salt&family=Sedgwick+Ave&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fredericka+the+Great&family=Permanent+Marker&family=Rock+Salt&family=Sedgwick+Ave&family=Reenie+Beanie&family=Caveat+Brush&family=Shadows+Into+Light&display=swap"
         rel="stylesheet">
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="wall.css">
 
-    <!-- Supabase and html2canvas Libraries -->
+    <!-- Supabase, html2canvas, and Marked Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Main Logic -->
     <script type="module" src="wall.js"></script>
@@ -50,6 +51,20 @@
         </div>
     </div>
 
+    <!-- Event Details Modal -->
+    <div id="details-modal" class="modal">
+        <div class="modal-content details-content">
+            <h2>Event Information</h2>
+            <div id="markdown-container" class="markdown-body">
+                <!-- Markdown content injected here -->
+                <p>Loading event details...</p>
+            </div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button id="btn-close-details" class="btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Application Layout -->
     <div id="app-wrapper" style="display: none;">
 
@@ -68,6 +83,7 @@
             </div>
 
             <div class="sidebar-actions">
+                <button id="btn-event-details" class="btn-primary" style="margin-bottom: 15px;">Event Details</button>
                 <button id="btn-leave-message" class="btn-primary">Leave a Message</button>
                 <button id="btn-edit-message" class="btn-secondary" style="display: none;">Edit My Message</button>
             </div>

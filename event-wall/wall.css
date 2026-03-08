@@ -226,6 +226,53 @@ textarea {
     color: var(--accent);
 }
 
+/* Markdown Details Styling */
+.details-content {
+    max-width: 600px;
+    /* Slightly wider for reading */
+    text-align: left;
+}
+
+.markdown-body h1 {
+    font-size: 24px;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.markdown-body h2 {
+    font-size: 18px;
+    color: var(--accent-color);
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+.markdown-body p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.markdown-body ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+    color: var(--text-secondary);
+}
+
+.markdown-body li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.markdown-body strong {
+    color: var(--text-primary);
+}
+
+.markdown-body hr {
+    border: none;
+    border-top: 1px solid #444;
+    margin: 25px 0;
+}
+
 /* Graffiti Tag Base */
 .graffiti-tag {
     position: absolute;
@@ -237,6 +284,5 @@ textarea {
     pointer-events: none;
     /* Let clicks pass through if needed */
     user-select: none;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-    /* Note: Color, Font-Family, Transform, Size injected via JS */
+    /* Note: Glow shadows, Color, Font-Family, Transform, Size injected via JS */
 }

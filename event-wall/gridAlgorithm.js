@@ -1,6 +1,6 @@
 // Optimized Grid Placement Algorithm
 
-class GraffitiGrid {
+export class GraffitiGrid {
     constructor(containerWidth, containerHeight, minCellWidth = 160, minCellHeight = 120) {
         this.minCellWidth = minCellWidth;
         this.minCellHeight = minCellHeight;
@@ -69,6 +69,33 @@ class GraffitiGrid {
     }
 }
 
+export function generateRandomStyles(contentLength) {
+    const fonts = [
+        "Permanent Marker", "Rock Salt", "Sedgwick Ave", "Fredericka the Great",
+        "Reenie Beanie", "Caveat Brush", "Shadows Into Light"
+    ];
+    const colors = [
+        { hex: "#ff0055", rgb: "255, 0, 85" },
+        { hex: "#00e5ff", rgb: "0, 229, 255" },
+        { hex: "#ffd500", rgb: "255, 213, 0" },
+        { hex: "#00ff88", rgb: "0, 255, 136" },
+        { hex: "#ffffff", rgb: "255, 255, 255" },
+        { hex: "#ff3300", rgb: "255, 51, 0" },
+        { hex: "#b800ff", rgb: "184, 0, 255" }
+    ];
+
+    const chosenColor = colors[Math.floor(Math.random() * colors.length)];
+    const lengthScore = Math.max(10, contentLength);
+
+    return {
+        font: fonts[Math.floor(Math.random() * fonts.length)],
+        color_hex: chosenColor.hex,
+        color_rgb: chosenColor.rgb,
+        rotation: (Math.random() * 24 - 12).toFixed(2), // -12 to +12 degrees
+        font_size: Math.max(18, Math.min(42, 450 / lengthScore))
+    };
+}
+
 export function renderMessage(container, message, grid) {
     const el = document.createElement("div");
     el.className = "graffiti-tag";
@@ -80,23 +107,28 @@ export function renderMessage(container, message, grid) {
 
     const { left, top } = grid.calculateStyles(message.grid_x, message.grid_y);
 
-    // Position from center to easily handle rotation without bounds-breaking
+    // Apply persistent database styles or default fallbacks
+    const rot = message.rotation !== undefined ? message.rotation : (Math.random() * 24 - 12);
+
     el.style.position = "absolute";
     el.style.left = `${left}px`;
     el.style.top = `${top}px`;
-    el.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 24 - 12}deg)`;
+    el.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
 
-    // Styling
-    const fonts = ["Permanent Marker", "Rock Salt", "Sedgwick Ave", "Fredericka the Great"];
-    const colors = ["#ff0055", "#00c2ff", "#ffd500", "#00ff88", "#ffffff"];
+    el.style.fontFamily = message.font || "Permanent Marker";
+    const hex = message.color_hex || "#ffffff";
+    const rgb = message.color_rgb || "255, 255, 255";
+    el.style.color = hex;
 
-    el.style.fontFamily = fonts[Math.floor(Math.random() * fonts.length)];
-    el.style.color = colors[Math.floor(Math.random() * colors.length)];
+    // Create a realistic spray paint glow/drip effect using multiple layered text-shadows
+    el.style.textShadow = `
+        0px 0px 4px rgba(0,0,0,0.8),
+        0px 0px 8px rgba(${rgb}, 0.6),
+        0px 0px 15px rgba(${rgb}, 0.4),
+        0px 5px 2px rgba(${rgb}, 0.2)
+    `;
 
-    // Dynamic sizing based on string length (shorter strings = bigger text)
-    const lengthScore = Math.max(10, message.content.length);
-    const fontSize = Math.max(16, Math.min(36, 400 / lengthScore));
-    el.style.fontSize = `${fontSize}px`;
+    el.style.fontSize = `${message.font_size || 24}px`;
 
     container.appendChild(el);
 }
