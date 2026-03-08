@@ -15,7 +15,7 @@ export async function exportWall() {
         const canvas = await html2canvas(wallContainer, {
             useCORS: true,
             allowTaint: false,
-            backgroundColor: '#121212',
+            backgroundColor: null,
             scale: 2 // High resolution for print
         });
 
