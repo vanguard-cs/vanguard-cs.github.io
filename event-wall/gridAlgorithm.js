@@ -150,12 +150,14 @@ export function renderMessage(container, message, grid, isAdmin = false) {
     const rgb = message.color_rgb || "255, 255, 255";
     el.style.color = hex;
 
-    // Create a realistic spray paint glow/drip effect using multiple layered text-shadows
+    // Create a high-contrast "stroke" and glow effect to ensure readability on concrete
     el.style.textShadow = `
-        0px 0px 4px rgba(0,0,0,0.8),
-        0px 0px 8px rgba(${rgb}, 0.6),
-        0px 0px 15px rgba(${rgb}, 0.4),
-        0px 5px 2px rgba(${rgb}, 0.2)
+        -1px -1px 0 #000,  
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000,
+        0px 0px 8px rgba(${rgb}, 0.8),
+        0px 0px 20px rgba(${rgb}, 0.4)
     `;
 
     // Font size baseline
