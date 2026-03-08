@@ -299,7 +299,7 @@ function initDesignMode() {
 
         if (error) {
             console.error("Failed to save position:", error);
-            alert("Design Mode Error: Failed to save position. Check if you ran the Supabase SQL migration for the new columns!");
+            alert("Design Mode Error: " + error.message + " | Did you run the SQL migration for new columns AND the RLS policy?");
         }
 
         draggedElement.style.zIndex = '';
@@ -343,7 +343,7 @@ function initDesignMode() {
 
         if (error) {
             console.error("Failed to save scale:", error);
-            alert("Design Mode Error: Failed to save scale. Have you run the SQL migration?");
+            alert("Design Mode Error: " + error.message + " | Have you run the SQL migration including the RLS 'Update' policy?");
         }
     }, { passive: false });
 }
