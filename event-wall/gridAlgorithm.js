@@ -125,7 +125,7 @@ export function renderMessage(container, message, grid, isAdmin = false) {
 
     // Calculate Position: Use manual override if present, otherwise use grid slot
     let left, top;
-    if (message.is_manual && message.manual_x !== null && message.manual_y !== null) {
+    if (message.is_manual && message.manual_x !== null) {
         left = message.manual_x;
         top = message.manual_y;
     } else {

@@ -271,9 +271,10 @@ function initDesignMode() {
         if (!draggedElement || !isDesignMode) return;
 
         const surfaceRect = wallSurface.getBoundingClientRect();
-        // Use offset to keep the relative grab point
-        const x = e.clientX - surfaceRect.left - dragOffset.x;
-        const y = e.clientY - surfaceRect.top + window.scrollY - dragOffset.y;
+        // clientX/Y are relative to viewport, getBoundingClientRect is too.
+        // The difference is exactly the local coordinate.
+        const x = e.clientX - surfaceRect.left;
+        const y = e.clientY - surfaceRect.top;
 
         draggedElement.style.left = `${x}px`;
         draggedElement.style.top = `${y}px`;
@@ -319,12 +320,22 @@ function initDesignMode() {
 
         // Update UI immediately
         msg.manual_scale = currentScale;
-        tag.style.transform = tag.style.transform.replace(/scale\([^)]*\)/, `scale(${currentScale})`);
+        msg.is_manual = true;
+
+        // Update local element style
+        const baseTransform = tag.style.transform.split('scale(')[0];
+        tag.style.transform = `${baseTransform}scale(${currentScale})`;
 
         // Persist
         await supabase
             .from('messages')
-            .update({ manual_scale: currentScale })
+            .update({
+                manual_scale: currentScale,
+                is_manual: true,
+                // Also save current position to "lock" it
+                manual_x: parseFloat(tag.style.left),
+                manual_y: parseFloat(tag.style.top)
+            })
             .eq('id', msgId);
     }, { passive: false });
 }
