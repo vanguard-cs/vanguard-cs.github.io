@@ -46,7 +46,8 @@ async function initAuth() {
             msgEl.innerText = "Sending magic link...";
 
             const { error } = await supabase.auth.signInWithOtp({
-                email: email
+                email: email,
+                options: { emailRedirectTo: 'https://vanguard-cs.github.io/event-wall/' }
             });
 
             if (error) {
