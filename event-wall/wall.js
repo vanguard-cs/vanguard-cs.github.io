@@ -46,8 +46,7 @@ async function initAuth() {
             msgEl.innerText = "Sending magic link...";
 
             const { error } = await supabase.auth.signInWithOtp({
-                email: email,
-                options: { emailRedirectTo: window.location.href }
+                email: email
             });
 
             if (error) {
