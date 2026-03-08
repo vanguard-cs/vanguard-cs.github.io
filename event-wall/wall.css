@@ -58,13 +58,28 @@ html {
     width: var(--sidebar-width);
     flex-shrink: 0;
     background-color: var(--bg-panel);
-    border-left: 1px solid #333;
+    border-right: 2px dashed #444;
     display: flex;
     flex-direction: column;
     padding: 24px;
     box-sizing: border-box;
     z-index: 10;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.8);
+    position: relative;
+}
+
+/* Subtle grunge noise overlay for the sidebar */
+#sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background-image: url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.85\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noiseFilter)\"/%3E%3C/svg%3E');
+    opacity: 0.04;
+    z-index: -1;
 }
 
 .sidebar-header h2 {
@@ -88,48 +103,69 @@ html {
 button {
     width: 100%;
     padding: 12px;
-    border: none;
-    border-radius: 4px;
+    border: 2px solid #fff;
+    border-radius: 0px;
+    /* Sharp 90s edges */
     font-family: 'Inter', sans-serif;
-    font-weight: 600;
+    font-weight: 800;
     font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    margin-bottom: 10px;
+    transition: all 0.1s ease;
+    margin-bottom: 12px;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+    /* Brutalist hard shadow */
+}
+
+button:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px rgba(0, 0, 0, 1);
 }
 
 .btn-primary,
 .btn-yes {
     background-color: var(--accent);
     color: white;
+    border-color: var(--accent);
 }
 
 .btn-primary:hover,
 .btn-yes:hover {
     background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
 }
 
 .btn-secondary,
 .btn-no {
-    background-color: #333;
-    color: white;
+    background-color: #222;
+    color: var(--text-muted);
+    border-color: #444;
 }
 
 .btn-secondary:hover,
 .btn-no:hover {
-    background-color: #444;
+    background-color: #333;
+    color: white;
 }
 
 .btn-text {
     background: transparent;
     color: var(--text-muted);
     padding: 0;
+    border: none;
+    box-shadow: none;
     text-align: left;
     margin-top: 10px;
 }
 
 .btn-text:hover {
-    color: white;
+    color: var(--accent);
+    transform: none;
+}
+
+.btn-text:active {
+    transform: none;
 }
 
 /* RSVP specific */
@@ -179,11 +215,13 @@ button {
 .modal-content {
     background-color: var(--bg-panel);
     padding: 30px;
-    border-radius: 8px;
+    border-radius: 0;
+    /* Sharp edges */
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    border: 1px solid #333;
+    border: 3px solid #444;
+    box-shadow: 10px 10px 0px var(--accent);
+    /* Acid grunge shadow */
 }
 
 .modal-content h2 {
@@ -196,12 +234,21 @@ textarea {
     width: 100%;
     padding: 12px;
     margin: 15px 0;
-    background-color: #121212;
-    border: 1px solid #444;
-    color: white;
-    border-radius: 4px;
+    background-color: #0a0a0a;
+    border: 2px dashed #555;
+    color: var(--accent);
+    font-weight: bold;
+    border-radius: 0;
     font-family: inherit;
     box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+input[type="email"]:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background-color: #111;
 }
 
 textarea {
