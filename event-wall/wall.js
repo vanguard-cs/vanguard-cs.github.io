@@ -222,6 +222,10 @@ btnCloseDetails.addEventListener('click', () => {
     modalDetails.classList.remove('active');
 });
 
+document.getElementById('btn-back-details').addEventListener('click', () => {
+    modalDetails.classList.remove('active');
+});
+
 
 document.getElementById('btn-rsvp-yes').addEventListener('click', () => submitRsvp('yes'));
 document.getElementById('btn-rsvp-no').addEventListener('click', () => submitRsvp('no'));
