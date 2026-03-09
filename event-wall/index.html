@@ -79,6 +79,15 @@
 
     <!-- Main Application Layout -->
     <div id="app-wrapper" style="display: none;">
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+        <!-- Mobile Specific UI -->
+        <header id="mobile-header">
+            <h1 style="color: var(--accent); margin: 0; font-size: 1.2rem;">Event Wall</h1>
+            <button id="btn-mobile-menu" class="btn-text">Menu</button>
+        </header>
+
+        <button id="fab-leave-message" title="Leave a Message">+</button>
 
         <!-- The Graffiti Wall (Scrollable if expands) -->
         <main id="wall-container">
