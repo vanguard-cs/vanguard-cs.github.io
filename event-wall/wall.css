@@ -407,3 +407,67 @@ textarea {
 .graffiti-tag:hover .btn-admin-delete {
     opacity: 1;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    #app-wrapper {
+        flex-direction: column-reverse;
+        /* Sidebar at bottom, wall on top */
+        overflow: hidden;
+    }
+
+    #sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-top: 2px dashed #444;
+        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.8);
+        padding: 15px;
+    }
+
+    #sidebar .sidebar-header,
+    #sidebar .sidebar-actions,
+    #sidebar .rsvp-section {
+        margin-top: 15px;
+    }
+
+    #wall-container {
+        width: 100%;
+        flex-grow: 1;
+        /* Scroll both ways if needed */
+        overflow: auto;
+    }
+
+    #wall-surface {
+        /* Maintain enough width for graffiti layout not to crush */
+        min-width: 800px;
+    }
+
+    .modal-content {
+        padding: 20px;
+        max-width: 90%;
+        box-shadow: 5px 5px 0px var(--accent);
+    }
+
+    .color-palette {
+        gap: 8px;
+    }
+
+    .swatch {
+        width: 35px;
+        /* Larger for touch */
+        height: 35px;
+    }
+
+    /* Adjust admin controls for small screen */
+    #admin-section {
+        margin-top: 20px;
+        padding-top: 15px;
+    }
+
+    /* Make buttons slightly larger for tap targets */
+    button {
+        padding: 14px;
+        font-size: 15px;
+    }
+}

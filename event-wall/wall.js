@@ -243,15 +243,19 @@ function initDesignMode() {
         btnToggle.innerText = isDesignMode ? "Exit Design Mode" : "Enter Design Mode";
         btnToggle.classList.toggle('btn-yes', isDesignMode);
 
+        // Prevent accidental scrolling on mobile when dragging
+        wallSurface.style.touchAction = isDesignMode ? 'none' : 'auto';
+
         if (!isDesignMode) {
             // Refresh to ensure all positions are synced
             loadWall();
         }
     });
 
-    // Handle Dragging
-    wallSurface.addEventListener('mousedown', (e) => {
+    // Handle Dragging (Mouse & Touch)
+    const handleStart = (e) => {
         if (!isDesignMode) return;
+        const input = e.touches ? e.touches[0] : e;
         const tag = e.target.closest('.graffiti-tag');
         if (!tag) return;
 
@@ -259,28 +263,28 @@ function initDesignMode() {
         const rect = tag.getBoundingClientRect();
         const surfaceRect = wallSurface.getBoundingClientRect();
 
-        // Calculate offset from click to center of element
-        dragOffset.x = e.clientX - rect.left - rect.width / 2;
-        dragOffset.y = e.clientY - rect.top - rect.height / 2;
+        // Calculate offset from click/touch to center of element
+        dragOffset.x = input.clientX - rect.left - rect.width / 2;
+        dragOffset.y = input.clientY - rect.top - rect.height / 2;
 
         tag.style.transition = 'none';
         tag.style.zIndex = 1000;
-    });
+    };
 
-    window.addEventListener('mousemove', (e) => {
+    const handleMove = (e) => {
         if (!draggedElement || !isDesignMode) return;
+        const input = e.touches ? e.touches[0] : e;
 
         const surfaceRect = wallSurface.getBoundingClientRect();
         // clientX/Y are relative to viewport, getBoundingClientRect is too.
-        // The difference is exactly the local coordinate.
-        const x = e.clientX - surfaceRect.left;
-        const y = e.clientY - surfaceRect.top;
+        const x = input.clientX - surfaceRect.left;
+        const y = input.clientY - surfaceRect.top;
 
         draggedElement.style.left = `${x}px`;
         draggedElement.style.top = `${y}px`;
-    });
+    };
 
-    window.addEventListener('mouseup', async (e) => {
+    const handleEnd = async (e) => {
         if (!draggedElement || !isDesignMode) return;
 
         const msgId = draggedElement.getAttribute('data-id');
@@ -304,7 +308,17 @@ function initDesignMode() {
 
         draggedElement.style.zIndex = '';
         draggedElement = null;
-    });
+    };
+
+    // Bind Mouse
+    wallSurface.addEventListener('mousedown', handleStart);
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleEnd);
+
+    // Bind Touch
+    wallSurface.addEventListener('touchstart', handleStart, { passive: false });
+    window.addEventListener('touchmove', handleMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
 
     // Handle Resizing via Mouse Wheel (Shift + Wheel)
     wallSurface.addEventListener('wheel', async (e) => {

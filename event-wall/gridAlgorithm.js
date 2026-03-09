@@ -125,10 +125,13 @@ export function renderMessage(container, message, grid, isAdmin = false) {
 
     // Calculate Position: Use manual override if present, otherwise use grid slot
     let left, top;
-    if (message.is_manual && message.manual_x !== null) {
+    if (message.is_manual) {
         left = message.manual_x;
         top = message.manual_y;
-    } else {
+    }
+
+    // If coords are null even if manual (first move after toggle), use grid as fallback
+    if (left === undefined || left === null) {
         const coords = grid.calculateStyles(message.grid_x, message.grid_y);
         left = coords.left;
         top = coords.top;
