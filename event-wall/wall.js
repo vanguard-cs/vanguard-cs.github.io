@@ -218,6 +218,30 @@ btnDetails.addEventListener('click', async () => {
     }
 });
 
+// Mobile Sidebar / FAB Logic
+const sidebar = document.getElementById('sidebar');
+const backdrop = document.getElementById('sidebar-backdrop');
+const btnMobileMenu = document.getElementById('btn-mobile-menu');
+const fabLeave = document.getElementById('fab-leave-message');
+
+const toggleSidebar = (force) => {
+    const isOpen = force !== undefined ? force : !sidebar.classList.contains('open');
+    sidebar.classList.toggle('open', isOpen);
+    backdrop.classList.toggle('active', isOpen);
+};
+
+if (btnMobileMenu) {
+    btnMobileMenu.addEventListener('click', () => toggleSidebar());
+}
+if (backdrop) {
+    backdrop.addEventListener('click', () => toggleSidebar(false));
+}
+if (fabLeave) {
+    fabLeave.addEventListener('click', () => {
+        modalController.openModal(null);
+    });
+}
+
 btnCloseDetails.addEventListener('click', () => {
     modalDetails.classList.remove('active');
 });
