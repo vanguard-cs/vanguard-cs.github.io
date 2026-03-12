@@ -207,6 +207,8 @@ button:active {
     z-index: 1000;
     align-items: center;
     justify-content: center;
+    /* Allow pinch-zoom and panning explicitly */
+    touch-action: pan-x pan-y pinch-zoom;
 }
 
 .modal.active {
@@ -220,9 +222,13 @@ button:active {
     /* Sharp edges */
     width: 100%;
     max-width: 400px;
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow-y: auto;
     border: 3px solid #444;
     box-shadow: 10px 10px 0px var(--accent);
     /* Acid grunge shadow */
+    box-sizing: border-box;
 }
 
 .modal-content h2 {
@@ -508,7 +514,15 @@ textarea {
         padding: 20px;
         width: 90%;
         max-width: none;
+        max-height: 85vh;
+        max-height: 85dvh;
         box-shadow: 5px 5px 0px var(--accent);
+    }
+
+    input[type="email"],
+    textarea {
+        font-size: 16px;
+        /* Prevents iOS Safari auto-zoom */
     }
 
     button {
