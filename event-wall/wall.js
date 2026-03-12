@@ -174,7 +174,10 @@ async function handleMessageSave(textContent, existingMessageObj, chosenColor = 
 // Bind Interactions
 const modalController = initMessageModal(handleMessageSave);
 
-btnLeaveMsg.addEventListener('click', () => modalController.openModal(null));
+btnLeaveMsg.addEventListener('click', () => {
+    toggleSidebar(false);
+    modalController.openModal(null);
+});
 
 // Global listener for Admin Delete Buttons
 document.addEventListener('click', async (e) => {
@@ -194,7 +197,10 @@ document.addEventListener('click', async (e) => {
 btnEditMsg.addEventListener('click', () => {
     // Find the user's specific message object
     const myMsg = messagesCache.find(m => m.id === myMessageId);
-    if (myMsg) modalController.openModal(myMsg);
+    if (myMsg) {
+        toggleSidebar(false);
+        modalController.openModal(myMsg);
+    }
 });
 
 // Event Details Markdown Modal
@@ -204,6 +210,7 @@ const btnCloseDetails = document.getElementById('btn-close-details');
 const markdownContainer = document.getElementById('markdown-container');
 
 btnDetails.addEventListener('click', async () => {
+    toggleSidebar(false);
     modalDetails.classList.add('active');
     try {
         const response = await fetch('details.md');
@@ -238,8 +245,14 @@ if (backdrop) {
 }
 if (fabLeave) {
     fabLeave.addEventListener('click', () => {
+        toggleSidebar(false);
         modalController.openModal(null);
     });
+}
+
+const btnGoWall = document.getElementById('btn-go-to-wall');
+if (btnGoWall) {
+    btnGoWall.addEventListener('click', () => toggleSidebar(false));
 }
 
 btnCloseDetails.addEventListener('click', () => {
