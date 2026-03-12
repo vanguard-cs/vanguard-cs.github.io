@@ -217,14 +217,17 @@ button:active {
 
 .modal-content {
     background-color: var(--bg-panel);
+    display: flex;
+    flex-direction: column;
     padding: 30px;
     border-radius: 0;
     /* Sharp edges */
     width: 100%;
     max-width: 400px;
-    max-height: 90vh;
-    max-height: 90dvh;
-    overflow-y: auto;
+    max-height: 85vh;
+    max-height: 85dvh;
+    overflow: hidden;
+    /* Content handles overflow */
     border: 3px solid #444;
     box-shadow: 10px 10px 0px var(--accent);
     /* Acid grunge shadow */
@@ -232,6 +235,7 @@ button:active {
 }
 
 .modal-content h2 {
+    flex-shrink: 0;
     margin-top: 0;
     color: var(--text-primary);
 }
@@ -305,13 +309,20 @@ textarea:focus {
 
 textarea {
     resize: none;
-    height: 100px;
+    height: 150px;
+    /* Consistent starting height */
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
 .modal-actions {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
+    flex-shrink: 0;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #444;
 }
 
 .modal-actions button {
@@ -331,6 +342,16 @@ textarea {
     max-width: 600px;
     /* Slightly wider for reading */
     text-align: left;
+    height: 80vh;
+    /* Fixed proportional height for long text */
+    height: 80dvh;
+}
+
+.markdown-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    /* Space for scrollbar */
 }
 
 .markdown-body h1 {
@@ -512,10 +533,10 @@ textarea {
 
     .modal-content {
         padding: 20px;
-        width: 90%;
+        width: 95%;
         max-width: none;
-        max-height: 85vh;
-        max-height: 85dvh;
+        max-height: 80vh;
+        max-height: 80dvh;
         box-shadow: 5px 5px 0px var(--accent);
     }
 
