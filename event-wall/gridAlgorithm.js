@@ -39,6 +39,23 @@ export class GraffitiGrid {
         return maxY + (this.cellHeight) + 100;
     }
 
+    getTotalWidth(messages = []) {
+        // Find the maximum X coordinate among all messages
+        const maxX = messages.reduce((max, m) => {
+            let x;
+            if (m.is_manual && m.manual_x !== undefined && m.manual_x !== null) {
+                x = m.manual_x;
+            } else {
+                // Approximate X based on grid slot
+                x = (m.grid_x * this.cellWidth) + (this.cellWidth / 2);
+            }
+            return Math.max(max, x);
+        }, this.containerWidth); // Default to at least container width
+
+        // Return the max X plus a buffer (half a cell width + extra)
+        return maxX + (this.cellWidth) + 100;
+    }
+
     /**
      * Efficiently finds a random available slot using a Set for O(1) lookups
      */

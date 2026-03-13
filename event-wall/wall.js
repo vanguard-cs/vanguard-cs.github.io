@@ -109,6 +109,7 @@ async function loadWall() {
 
     // 4. Ensure the background container expands to fit the content
     wallSurface.style.height = `${currentGrid.getTotalHeight(messagesCache)}px`;
+    wallSurface.style.width = `${currentGrid.getTotalWidth(messagesCache)}px`;
 
     // 5. Update UI Buttons
     if (myMessageId) {
@@ -333,6 +334,18 @@ function initDesignMode() {
         const finalX = parseFloat(draggedElement.style.left);
         const finalY = parseFloat(draggedElement.style.top);
 
+        // Update local cache to ensure immediate grid calculations are correct
+        const msg = messagesCache.find(m => m.id === msgId);
+        if (msg) {
+            msg.manual_x = finalX;
+            msg.manual_y = finalY;
+            msg.is_manual = true;
+        }
+
+        // Update dimensions
+        wallSurface.style.height = `${currentGrid.getTotalHeight(messagesCache)}px`;
+        wallSurface.style.width = `${currentGrid.getTotalWidth(messagesCache)}px`;
+
         // Persist to Supabase
         const { error } = await supabase
             .from('messages')
@@ -380,6 +393,14 @@ function initDesignMode() {
         // Update UI immediately
         msg.manual_scale = currentScale;
         msg.is_manual = true;
+
+        // Also update local position in cache to keep dimensions in sync
+        msg.manual_x = parseFloat(tag.style.left);
+        msg.manual_y = parseFloat(tag.style.top);
+
+        // Update dimensions
+        wallSurface.style.height = `${currentGrid.getTotalHeight(messagesCache)}px`;
+        wallSurface.style.width = `${currentGrid.getTotalWidth(messagesCache)}px`;
 
         // Update local element style
         const baseTransform = tag.style.transform.split('scale(')[0];
