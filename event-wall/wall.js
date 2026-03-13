@@ -90,7 +90,8 @@ async function loadWall() {
     const container = document.getElementById('wall-container');
     // Ensure the container is drawn before measuring
     await new Promise(r => setTimeout(r, 50));
-    currentGrid = new GraffitiGrid(container.clientWidth, container.clientHeight);
+    // Use the actual surface width (which is 1000px min on mobile) for the grid
+    currentGrid = new GraffitiGrid(wallSurface.clientWidth, container.clientHeight);
 
     // 3. Render
     wallSurface.innerHTML = ''; // Clear
@@ -106,8 +107,8 @@ async function loadWall() {
         }
     }
 
-    // 4. Ensure the background container expands to fit the grid
-    wallSurface.style.height = `${currentGrid.getTotalHeight()}px`;
+    // 4. Ensure the background container expands to fit the content
+    wallSurface.style.height = `${currentGrid.getTotalHeight(messagesCache)}px`;
 
     // 5. Update UI Buttons
     if (myMessageId) {

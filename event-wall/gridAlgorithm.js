@@ -17,8 +17,26 @@ export class GraffitiGrid {
         this.cellHeight = this.minCellHeight; // Keep fixed height for readability, or stretch too
     }
 
-    getTotalHeight() {
-        return (this.rows * this.cellHeight) + 100; // Add buffer for bottom-most messages
+    getTotalHeight(messages = []) {
+        // If no messages, fallback to basic grid rows
+        if (!messages || messages.length === 0) {
+            return (this.rows * this.cellHeight) + 100;
+        }
+
+        // Find the maximum Y coordinate among all messages
+        const maxY = messages.reduce((max, m) => {
+            let y;
+            if (m.is_manual && m.manual_y !== undefined && m.manual_y !== null) {
+                y = m.manual_y;
+            } else {
+                // Approximate Y based on grid slot
+                y = (m.grid_y * this.cellHeight) + (this.cellHeight / 2);
+            }
+            return Math.max(max, y);
+        }, 0);
+
+        // Return the max Y plus a buffer (half a cell height + extra)
+        return maxY + (this.cellHeight) + 100;
     }
 
     /**
