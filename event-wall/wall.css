@@ -40,7 +40,7 @@ html {
     /* Match surface fallback */
 }
 
-# wall-surface {
+#wall-surface {
     position: relative;
     width: 100%;
     min-height: 100%;
