@@ -9,28 +9,47 @@ export async function submitRsvp(status) {
     }
 
     const email = user.email;
+    const rsvpStatusLbl = document.getElementById("rsvp-status");
 
     try {
-        // Upsert the RSVP. RLS ensures a user can only insert/update their own RSVP row.
-        const { error } = await supabase
+        // 1. Check if user already has an RSVP
+        const { data: existing, error: fetchError } = await supabase
+            .from('rsvps')
+            .select('status')
+            .eq('email', email)
+            .maybeSingle();
+
+        if (fetchError) {
+            console.error("Error checking RSVP status:", fetchError);
+        }
+
+        if (existing) {
+            if (rsvpStatusLbl) {
+                rsvpStatusLbl.innerText = "You have RSVP'd. To change your RSVP contact Az.";
+                rsvpStatusLbl.style.color = "#aaaaaa"; // Muted
+            }
+            return true;
+        }
+
+        // 2. Upsert the RSVP (First time)
+        const { error: upsertError } = await supabase
             .from('rsvps')
             .upsert({ email: email, status: status }, { onConflict: 'email' });
 
-        if (error) {
-            console.error("Supabase RSVP Error:", error.message);
+        if (upsertError) {
+            console.error("Supabase RSVP Error:", upsertError.message);
             alert("Error saving RSVP. Please try again.");
             return false;
         }
 
-        // Trigger the Edge Function to send email via Resend
+        // 3. Trigger the Edge Function to send email via Resend (Only on first submission)
         await supabase.functions.invoke('send-rsvp-email', {
             body: { email: email, status: status }
         });
 
-        const rsvpStatusLbl = document.getElementById("rsvp-status");
         if (rsvpStatusLbl) {
-            rsvpStatusLbl.innerText = `You RSVP'd: ${status.toUpperCase()}`;
-            rsvpStatusLbl.style.color = status === 'yes' ? "#00ff88" : "#ff0055";
+            rsvpStatusLbl.innerText = "You have RSVP'd. To change your RSVP contact Az.";
+            rsvpStatusLbl.style.color = "#aaaaaa";
         }
 
         return true;

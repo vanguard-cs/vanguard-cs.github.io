@@ -119,6 +119,21 @@ async function loadWall() {
         btnLeaveMsg.style.display = 'block';
         btnEditMsg.style.display = 'none';
     }
+
+    // 6. Check RSVP Status
+    const rsvpStatusLbl = document.getElementById("rsvp-status");
+    if (rsvpStatusLbl && currentUser) {
+        const { data: rsvp } = await supabase
+            .from('rsvps')
+            .select('status')
+            .eq('email', currentUser.email)
+            .maybeSingle();
+
+        if (rsvp) {
+            rsvpStatusLbl.innerText = "You have RSVP'd. To change your RSVP contact Az.";
+            rsvpStatusLbl.style.color = "#aaaaaa";
+        }
+    }
 }
 
 // Modal Form Submission Callback
