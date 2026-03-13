@@ -30,18 +30,17 @@ html {
     height: 100%;
 }
 
-/* The Wall */
 #wall-container {
     flex-grow: 1;
     height: 100%;
     overflow: auto;
     /* Allow scrolling if wall expands vertically */
     position: relative;
-    background-color: #121212;
+    background-color: #333;
+    /* Match surface fallback */
 }
 
-/* The surface where grid positions map to */
-#wall-surface {
+# wall-surface {
     position: relative;
     width: 100%;
     min-height: 100%;
@@ -52,6 +51,9 @@ html {
     background-image: url('assets/concrete_texture.jpg');
     background-repeat: repeat;
     background-size: 512px 512px;
+    background-attachment: local;
+    /* Moves with content */
+    display: block;
 }
 
 /* Fixed Sidebar */
