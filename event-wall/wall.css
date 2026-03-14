@@ -500,6 +500,8 @@ textarea {
         border-right: none;
         border-top: 4px solid var(--accent);
         box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.9);
+        overflow-y: auto;
+        padding-bottom: calc(40px + env(safe-area-inset-bottom));
     }
 
     #sidebar.open {
