@@ -52,12 +52,9 @@ async function initAuth() {
             const msgEl = document.getElementById('auth-message');
             msgEl.innerText = "Verifying guest access...";
 
-            // 1. Check if the email exists in the 'guests' table (Case-Insensitive)
-            const { data: guest, error: guestError } = await supabase
-                .from('guests')
-                .select('email')
-                .ilike('email', email)
-                .maybeSingle();
+            // 1. Check if the email exists via secure RPC (Database Function)
+            const { data: isGuest, error: guestError } = await supabase
+                .rpc('verify_guest_access', { check_email: email });
 
             if (guestError) {
                 console.error("Guest verification error details:", guestError);
@@ -65,7 +62,7 @@ async function initAuth() {
                 return;
             }
 
-            if (!guest) {
+            if (!isGuest) {
                 msgEl.innerText = "This email is not on the guest list.";
                 return;
             }
