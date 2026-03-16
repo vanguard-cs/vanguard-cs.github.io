@@ -48,20 +48,20 @@ async function initAuth() {
         // Magic Link Handler
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('auth-email').value;
+            const email = document.getElementById('auth-email').value.trim().toLowerCase();
             const msgEl = document.getElementById('auth-message');
             msgEl.innerText = "Verifying guest access...";
 
-            // 1. Check if the email exists in the 'guests' table
+            // 1. Check if the email exists in the 'guests' table (Case-Insensitive)
             const { data: guest, error: guestError } = await supabase
                 .from('guests')
                 .select('email')
-                .eq('email', email)
+                .ilike('email', email)
                 .maybeSingle();
 
             if (guestError) {
-                console.error("Guest verification error:", guestError);
-                msgEl.innerText = "Error verifying guest list.";
+                console.error("Guest verification error details:", guestError);
+                msgEl.innerText = "Error verifying guest list. Please check the console.";
                 return;
             }
 
