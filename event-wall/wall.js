@@ -50,15 +50,35 @@ async function initAuth() {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
             const msgEl = document.getElementById('auth-message');
+            msgEl.innerText = "Verifying guest access...";
+
+            // 1. Check if the email exists in the 'guests' table
+            const { data: guest, error: guestError } = await supabase
+                .from('guests')
+                .select('email')
+                .eq('email', email)
+                .maybeSingle();
+
+            if (guestError) {
+                console.error("Guest verification error:", guestError);
+                msgEl.innerText = "Error verifying guest list.";
+                return;
+            }
+
+            if (!guest) {
+                msgEl.innerText = "This email is not on the guest list.";
+                return;
+            }
+
             msgEl.innerText = "Sending magic link...";
 
-            const { error } = await supabase.auth.signInWithOtp({
+            const { error: authError } = await supabase.auth.signInWithOtp({
                 email: email,
                 options: { emailRedirectTo: getRedirectUrl() }
             });
 
-            if (error) {
-                msgEl.innerText = "Error: " + error.message;
+            if (authError) {
+                msgEl.innerText = "Error: " + authError.message;
             } else {
                 msgEl.innerText = "Check your email for the magic login link!";
             }
