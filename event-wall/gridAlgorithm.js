@@ -1,7 +1,7 @@
 // Optimized Grid Placement Algorithm
 
 export class GraffitiGrid {
-    constructor(containerWidth, containerHeight, minCellWidth = 160, minCellHeight = 120) {
+    constructor(containerWidth, containerHeight, minCellWidth = 280, minCellHeight = 180) {
         this.minCellWidth = minCellWidth;
         this.minCellHeight = minCellHeight;
         this.containerWidth = containerWidth;
@@ -95,9 +95,9 @@ export class GraffitiGrid {
         const paddingY = this.cellHeight * 0.1;
 
         // Random offset within the safe zone of the cell
-        // Reduced to 20% to prevent center-to-center overlap
-        const maxOffsetX = (this.cellWidth - paddingX * 2) * 0.2;
-        const maxOffsetY = (this.cellHeight - paddingY * 2) * 0.2;
+        // Reduced to 10% to prevent center-to-center overlap in larger cells
+        const maxOffsetX = (this.cellWidth - paddingX * 2) * 0.1;
+        const maxOffsetY = (this.cellHeight - paddingY * 2) * 0.1;
 
         const offsetX = (Math.random() * maxOffsetX * 2) - maxOffsetX;
         const offsetY = (Math.random() * maxOffsetY * 2) - maxOffsetY;
@@ -153,8 +153,8 @@ export function renderMessage(container, message, grid, isAdmin = false) {
         el.appendChild(delBtn);
     }
 
-    // Apply strict bounds to prevent massive words from breaking the layout
-    el.style.maxWidth = `${grid.cellWidth * 0.9}px`;
+    // Apply relaxed bounds to allow for wider horizontal expressions
+    el.style.maxWidth = `${grid.cellWidth * 1.1}px`;
     el.style.wordWrap = "break-word";
     el.setAttribute('data-id', message.id);
 
